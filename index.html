@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sorting Algorithm Visualizer</title>
+    <meta
+      name="description"
+      content="Interactive sorting algorithm visualizer for learning how common algorithms compare and swap values."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="toolbar" aria-label="Sorting controls">
+        <div class="control-group control-group--wide">
+          <label for="arraySize">Array size</label>
+          <div class="range-wrap">
+            <input id="arraySize" type="range" min="5" max="40" step="1" value="18" />
+            <output id="arraySizeValue" for="arraySize">18</output>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="algorithmSelect">Algorithm</label>
+          <select id="algorithmSelect" aria-label="Choose a sorting algorithm">
+            <option value="bubble">Bubble Sort</option>
+            <option value="selection">Selection Sort</option>
+          </select>
+        </div>
+
+        <button id="generateBtn" class="btn btn-secondary" type="button">
+          Generate Numbers
+        </button>
+      </header>
+
+      <section class="actions" aria-label="Visualization actions">
+        <button id="startBtn" class="btn btn-primary" type="button">Start</button>
+        <button id="stepBtn" class="btn btn-secondary" type="button">Step</button>
+        <button id="pauseBtn" class="btn btn-secondary" type="button">Pause</button>
+      </section>
+
+      <div id="statusMessage" class="status" role="status" aria-live="polite">
+        Ready to sort.
+      </div>
+
+      <section class="visualizer-panel" aria-label="Sorting visualization area">
+        <div id="arrayContainer" class="array-container" aria-live="polite"></div>
+      </section>
+    </main>
+  </body>
+</html>

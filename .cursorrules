@@ -1,0 +1,5 @@
+- Tech Stack: Pure, semantic HTML5; responsive modern CSS (Flexbox or CSS Grid); clean ES6+ JavaScript.
+- UI Design: Minimalist styling, accessibility compliant (high contrast, logical focus loops).
+- Code Structure: Separated concerns (index.html, styles.css, app.js). No inline style declarations or script blocks.
+- Code Cleanliness: Write descriptive comments explaining the state changes and DOM interactions.
+- Error Handling: Validate all form inputs before processing program state, displaying explicit, helpful visual notices on failures.
