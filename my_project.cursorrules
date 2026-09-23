@@ -1,0 +1,14 @@
+## Project guidelines
+
+- Use semantic HTML5 for structure and meaningful landmarks such as `header`, `nav`, `main`, `section`, `form`, and `footer` where appropriate.
+- Use only separated files: `index.html`, `styles.css`, and `app.js`. Do not add inline `style` attributes or inline `script` blocks.
+- Use modern responsive CSS with Flexbox or CSS Grid. Keep the visual design minimalist, readable, and high contrast across desktop and mobile layouts.
+- Use clean ES6+ JavaScript and keep DOM queries, state changes, event handlers, and rendering logic organized in `app.js`.
+- Preserve separation of concerns: HTML owns structure, CSS owns presentation, and JavaScript owns behavior and state.
+- Make controls keyboard accessible with logical tab order, visible `:focus-visible` states, associated labels, appropriate input types, and accessible names.
+- Use semantic elements before ARIA. Add ARIA only when native HTML semantics do not fully communicate the interaction or status.
+- Validate every form input before changing application state. Show explicit, helpful visual error messages beside the relevant fields and expose dynamic notices with an appropriate live region.
+- Clear or update validation messages when the user corrects an input. Do not rely on color alone to communicate errors or success.
+- Add descriptive comments in JavaScript where they explain state changes or important DOM interactions; avoid comments that merely restate syntax.
+- Keep naming descriptive and avoid one-letter variables. Prefer small, focused functions and avoid unrelated refactors.
+- After changes, verify the page at narrow and wide viewports and run the narrowest available validation or test command.
