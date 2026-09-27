@@ -6,7 +6,7 @@ The project is a dependency-free static web application. No package installation
 
 ### Open directly
 
-Open `index.html` in a modern browser.
+Open `frontend/index.html` in a modern browser.
 
 ### Run a local server
 
@@ -36,45 +36,42 @@ Open the URL printed by the server. Serving the directory is preferred when brow
 
 ## 3. Implementation Map
 
-### `index.html`
+### `frontend/index.html`
 
-Defines the document metadata, header/date area, introductory copy, task form, filter controls, task list, status regions, and footer. It loads the stylesheet and deferred JavaScript externally.
+Defines the Teacher Assistant metadata, subject and topic controls, lesson-plan status region, and generated card container. It loads the stylesheet and deferred JavaScript externally.
 
-### `styles.css`
+### `frontend/styles.css`
 
-Defines design tokens, typography, color contrast, layout, form states, task states, focus states, and the mobile breakpoint at 560px.
+Defines design tokens, typography, educational color contrast, responsive card-grid layout, form states, focus states, and the mobile breakpoint at 560px.
 
-### `app.js`
+### `frontend/app.js`
 
-Owns the task array and active filter. It validates input, handles form and task events, filters visible tasks, renders list items, updates counts, and writes status messages.
+Owns the lesson-plan request flow. It validates the topic, fetches source content, maps it into lesson-plan modules, renders cards with `createElement()` and `textContent`, and reports loading or error status.
 
 ## 4. Verification Commands
 
 Run the narrow syntax check after JavaScript changes:
 
 ```powershell
-node --check app.js
+node --check frontend/app.js
 ```
 
-Check the expected files and links:
+Check the expected frontend files and links:
 
 ```powershell
-Get-ChildItem -File
-Select-String -Path index.html -Pattern 'styles.css|app.js'
+Get-ChildItem frontend -File
+Select-String -Path frontend/index.html -Pattern 'styles.css|app.js'
 ```
 
 ## 5. Manual Test Pass
 
 1. Load the page at a desktop width.
-2. Submit an empty task and confirm the error appears and focus returns to the input.
-3. Submit one- and two-character values and confirm they are rejected.
-4. Add two valid tasks and confirm the count updates.
-5. Complete one task and confirm the completed count and visual state update.
-6. Use All, Active, and Completed filters.
-7. Delete one task.
-8. Add and complete another task, then use Clear completed.
-9. Repeat the pass at a narrow mobile width.
-10. Navigate through the controls with the keyboard and confirm visible focus.
+2. Submit with an empty topic and confirm the helpful message appears and focus returns to the topic input.
+3. Select a subject, enter a topic, and generate the lesson plan.
+4. Confirm the generated cards include target grade, learning objectives, duration, and key activities.
+5. Confirm the status message and module count update.
+6. Repeat the pass at a narrow mobile width.
+7. Navigate through the controls with the keyboard and confirm visible focus.
 
 ## 6. Change Workflow
 
