@@ -9,3 +9,14 @@ Student: Shattyk Rahmetolla, Assel Sergazy
 - **Presentation Builder:** Interactive, ready-to-use classroom presentation slides.
 - **Assignment & Quiz Engine:** Differentiated worksheets and multi-choice quizzes.
 - **Edu-Games Suite:** Gamified review tools including Flashcards, Quiz Arena, and Pair Matching.
+
+### Frontend development
+
+The current lesson-plan generator frontend uses React and Vite. From the project root, install dependencies and start the development server:
+
+```sh
+npm install
+npm run dev
+```
+
+Create a production build with `npm run build`. See [development.md](./development.md) for the frontend structure and verification steps.
