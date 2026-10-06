@@ -5,56 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Generate structured lesson plans for classroom use.">
   <title>Teacher Assistant - Lesson Plan Generator</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="page-shell header-content">
-      <a class="brand" href="index.html" aria-label="Teacher Assistant home">
-        <span class="brand-mark" aria-hidden="true">TA</span>
-        <span>Teacher Assistant</span>
-      </a>
-      <button class="button button-primary" id="fetch-btn" type="submit" form="plan-form">Generate Lesson Plan</button>
-    </div>
-  </header>
-
-  <main class="page-shell page-content">
-    <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">Plan with purpose</p>
-      <h1 id="page-title">Build a lesson worth remembering.</h1>
-      <p class="hero-copy">Choose a subject and topic to create a practical starting point for your next class.</p>
-    </section>
-
-    <section class="planner" aria-labelledby="planner-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Lesson planning studio</p>
-          <h2 id="planner-title">Generate a module</h2>
-        </div>
-        <p class="record-count" id="record-count">No plans generated</p>
-      </div>
-
-      <form class="plan-form" id="plan-form">
-        <div class="field-group">
-          <label for="subject-select">Subject</label>
-          <select id="subject-select" name="subject">
-            <option value="Science">Science</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Language Arts">Language Arts</option>
-            <option value="Social Studies">Social Studies</option>
-            <option value="Art">Art</option>
-          </select>
-        </div>
-        <div class="field-group field-group-wide">
-          <label for="topic-input">Topic</label>
-          <input id="topic-input" name="topic" type="text" maxlength="80" placeholder="e.g. The water cycle" required>
-        </div>
-      </form>
-
-      <div class="status-message" id="status-message" role="status" aria-live="polite">Choose a subject and topic to begin.</div>
-      <div class="card-grid" id="card-grid" aria-live="polite" aria-label="Generated lesson plans"></div>
-    </section>
-  </main>
+  <div id="root"></div>
+  <script type="module" src="/app.jsx"></script>
 </body>
 </html>

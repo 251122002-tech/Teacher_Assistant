@@ -2,35 +2,24 @@
 
 ## 1. Local Setup
 
-The project is a dependency-free static web application. No package installation is required for the current deliverable.
+The frontend uses React and Vite and requires Node.js and npm.
 
-### Open directly
+From the project root, install dependencies and start the development server:
 
-Open `frontend/index.html` in a modern browser.
-
-### Run a local server
-
-From the project directory, run one of the following commands:
-
-```powershell
-python -m http.server 8765
+```sh
+npm install
+npm run dev
 ```
 
-Or, when Node.js is available:
-
-```powershell
-npx serve .
-```
-
-Open the URL printed by the server. Serving the directory is preferred when browser security rules prevent local `file:` resources from loading.
+Open the local URL printed by Vite. Create a production build with `npm run build`, or serve the build locally with `npm run preview`.
 
 ## 2. Development Principles
 
-- Keep the three application layers separate: HTML, CSS, and JavaScript.
+- Use React components for interface structure and state, CSS for presentation, and HTML for the mount document.
 - Prefer native HTML semantics over custom interaction patterns.
 - Validate user input before modifying application state.
 - Keep state changes in small, named functions.
-- Render the visible task list from state rather than manually patching unrelated elements.
+- Render generated lesson-plan cards from React state rather than manually patching the DOM.
 - Preserve keyboard access, visible focus, and live feedback with every UI change.
 - Use ASCII by default and keep comments limited to non-obvious state or DOM interactions.
 
@@ -38,29 +27,28 @@ Open the URL printed by the server. Serving the directory is preferred when brow
 
 ### `frontend/index.html`
 
-Defines the Teacher Assistant metadata, subject and topic controls, lesson-plan status region, and generated card container. It loads the stylesheet and deferred JavaScript externally.
+Defines the page metadata and the React mount point; it loads the JSX entry through Vite.
 
 ### `frontend/styles.css`
 
 Defines design tokens, typography, educational color contrast, responsive card-grid layout, form states, focus states, and the mobile breakpoint at 560px.
 
-### `frontend/app.js`
+### `frontend/app.jsx`
 
-Owns the lesson-plan request flow. It validates the topic, fetches source content, maps it into lesson-plan modules, renders cards with `createElement()` and `textContent`, and reports loading or error status.
+Mounts the React application. The app owns subject/topic form state, validates the topic, fetches source content, maps it into lesson-plan modules, and renders cards and status updates.
 
 ## 4. Verification Commands
 
-Run the narrow syntax check after JavaScript changes:
+Build the frontend after changes:
 
-```powershell
-node --check frontend/app.js
+```sh
+npm run build
 ```
 
-Check the expected frontend files and links:
+Start the development server for interactive browser checks:
 
-```powershell
-Get-ChildItem frontend -File
-Select-String -Path frontend/index.html -Pattern 'styles.css|app.js'
+```sh
+npm run dev
 ```
 
 ## 5. Manual Test Pass
@@ -90,9 +78,10 @@ After editing:
 
 ## 7. Known Limitations
 
-- Tasks are not persisted across page refreshes.
+- Generated plans are held in memory and are cleared on page refresh.
+- Lesson-plan source content is fetched from JSONPlaceholder, so generation requires network access.
 - There is no backend, authentication, or cross-device synchronization.
-- There are no automated browser tests in the current project.
+- There are no automated browser tests in the current project. The Vite production build is the automated frontend verification.
 - The UI text is currently English while the project documentation can be extended for localization later.
 
 ## 8. Extension Guidance
