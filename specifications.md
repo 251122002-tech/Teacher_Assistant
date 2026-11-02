@@ -58,6 +58,7 @@ Teacher Assistant aims to reduce teacher workload with educational planning and 
 - Module objectives come from JSONPlaceholder post bodies. The returned content is sample placeholder data, not verified curriculum content or AI-generated lesson plans.
 - Generation requires network access to `https://jsonplaceholder.typicode.com/posts`.
 - State is in memory and resets on page refresh.
+- `seed.sql` contains ten fictional records for the ERD's `tblUser`, `tblDate`, and `tblClass` tables. It is a standalone SQLite seed and is not connected to the frontend.
 
 ## 7. Acceptance Checklist
 

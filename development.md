@@ -37,6 +37,10 @@ Defines design tokens, typography, educational color contrast, responsive card-g
 
 Mounts the React application. The app owns subject/topic form state, validates the topic, fetches source content, maps it into lesson-plan modules, and renders cards and status updates.
 
+### `seed.sql`
+
+Creates the three ERD tables and inserts ten fictional teacher records with one date and one class per user. It is a standalone SQLite seed script; the frontend does not connect to or load this data automatically. Run it against a SQLite database with `sqlite3 teacher_assistant.db ".read seed.sql"`.
+
 ## 4. Verification Commands
 
 Build the frontend after changes:
@@ -80,7 +84,7 @@ After editing:
 
 - Generated plans are held in memory and are cleared on page refresh.
 - Lesson-plan source content is fetched from JSONPlaceholder, so generation requires network access.
-- There is no backend, authentication, or cross-device synchronization.
+- There is no backend, application database connection, authentication, or cross-device synchronization. `seed.sql` only creates and populates a local SQLite database when run separately.
 - There are no automated browser tests in the current project. The Vite production build is the automated frontend verification.
 - The UI text is currently English while the project documentation can be extended for localization later.
 
