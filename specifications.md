@@ -58,7 +58,18 @@ Teacher Assistant aims to reduce teacher workload with educational planning and 
 - Module objectives come from JSONPlaceholder post bodies. The returned content is sample placeholder data, not verified curriculum content or AI-generated lesson plans.
 - Generation requires network access to `https://jsonplaceholder.typicode.com/posts`.
 - State is in memory and resets on page refresh.
-- `seed.sql` contains ten fictional records for the ERD's `tblUser`, `tblDate`, and `tblClass` tables. It is a standalone SQLite seed and is not connected to the frontend.
+- The persistent data model is specified in [docs/database-schema.md](./docs/database-schema.md) and implemented in `prisma/schema.prisma` for PostgreSQL 16. It has 14 tables covering users, subjects, class groups, curriculum objectives, lesson plans and their modules, scheduled class lessons, quizzes and flashcard decks. `prisma/seed.sql` loads fictional sample data. The frontend is not connected to this database yet.
+
+## 6a. Data Model Requirements (Deliverable 2)
+
+| ID | Requirement | Acceptance criteria |
+| --- | --- | --- |
+| DM-01 | Provide a Crow's Foot ERD. | `docs/erd.pdf` and `docs/erd.png` show every table with PK/FK badges and labeled cardinalities. |
+| DM-02 | Specify every column. | `docs/database-schema.md` lists the SQL type, constraints and description of every column. |
+| DM-03 | Normalize to 3NF. | N:M relationships use the junctions `teacher_subjects`, `lesson_plan_objectives` and `class_lessons`, and the 3NF check is documented. |
+| DM-04 | Enforce integrity in the database. | FKs declare ON DELETE CASCADE / RESTRICT / SET NULL as documented, and CHECK constraints guard enumerations, ranges and blank text. |
+| DM-05 | Keep the lesson-plan topic rule consistent. | `lesson_plans.topic` is `VARCHAR(80)` with a not-blank CHECK, matching FR-02 and FR-03. |
+| DM-06 | Index foreign keys. | Every FK column is the leading column of a B-Tree index. |
 
 ## 7. Acceptance Checklist
 

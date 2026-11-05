@@ -37,9 +37,17 @@ Defines design tokens, typography, educational color contrast, responsive card-g
 
 Mounts the React application. The app owns subject/topic form state, validates the topic, fetches source content, maps it into lesson-plan modules, and renders cards and status updates.
 
-### `seed.sql`
+### `prisma/schema.prisma` and `prisma/migrations/`
 
-Creates the three ERD tables and inserts ten fictional teacher records with one date and one class per user. It is a standalone SQLite seed script; the frontend does not connect to or load this data automatically. Run it against a SQLite database with `sqlite3 teacher_assistant.db ".read seed.sql"`.
+The executable PostgreSQL 16 schema. The init migration was generated with `prisma migrate diff --from-empty`, and the CHECK constraints were appended by hand because Prisma cannot express them. If you change the schema, create a new migration and add any new CHECK constraints to it manually. Keep `docs/database-schema.md` and the ERD in sync.
+
+### `prisma/seed.sql`
+
+Fictional sample data for every table. The ten teachers, classes and dates are carried over from the v0.1 SQLite seed. Run it with `npm run db:seed` after `npm run db:migrate`. It is safe to run more than once (`ON CONFLICT DO NOTHING`).
+
+### `docs/`
+
+`database-schema.md` is the Deliverable 2 report. `erd.svg` is the diagram source, and `erd.png` and `erd.pdf` are exports of it.
 
 ## 4. Verification Commands
 
@@ -53,6 +61,19 @@ Start the development server for interactive browser checks:
 
 ```sh
 npm run dev
+```
+
+Validate the database schema (no database connection needed):
+
+```sh
+npm run db:validate
+```
+
+Apply the schema and sample data to a PostgreSQL 16 database configured in `.env` (see README, "Database setup"):
+
+```sh
+npm run db:migrate
+npm run db:seed
 ```
 
 ## 5. Manual Test Pass
@@ -84,7 +105,7 @@ After editing:
 
 - Generated plans are held in memory and are cleared on page refresh.
 - Lesson-plan source content is fetched from JSONPlaceholder, so generation requires network access.
-- There is no backend, application database connection, authentication, or cross-device synchronization. `seed.sql` only creates and populates a local SQLite database when run separately.
+- There is no backend, authentication or cross-device synchronization. The PostgreSQL schema in `prisma/` is designed and verified, but the frontend does not read from it or write to it yet.
 - There are no automated browser tests in the current project. The Vite production build is the automated frontend verification.
 - The UI text is currently English while the project documentation can be extended for localization later.
 

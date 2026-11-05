@@ -2,7 +2,7 @@
 
 ## Project Context
 
-Teacher Assistant currently includes a React lesson-plan generator frontend built with Vite. The frontend entry point is `frontend/app.jsx`, the mount document is `frontend/index.html`, and presentation lives in `frontend/styles.css`. Supporting project documentation lives in `README.md`, `specifications.md`, and `development.md`.
+Teacher Assistant currently includes a React lesson-plan generator frontend built with Vite. The frontend entry point is `frontend/app.jsx`, the mount document is `frontend/index.html`, and presentation lives in `frontend/styles.css`. Supporting project documentation lives in `README.md`, `specifications.md`, and `development.md`. The PostgreSQL data model lives in `prisma/schema.prisma` (migration and seed in `prisma/`). Its ERD and design report live in `docs/`. Keep `docs/database-schema.md` and the ERD in sync with any schema change.
 
 ## Source of Truth
 
