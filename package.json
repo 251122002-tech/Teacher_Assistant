@@ -6,13 +6,18 @@
   "scripts": {
     "dev": "vite frontend",
     "build": "vite build frontend",
-    "preview": "vite preview frontend"
+    "preview": "vite preview frontend",
+    "db:validate": "prisma validate",
+    "db:format": "prisma format",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db execute --file prisma/seed.sql --schema prisma/schema.prisma"
   },
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "prisma": "6.19.3",
     "vite": "^6.0.0"
   }
 }
