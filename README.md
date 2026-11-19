@@ -10,14 +10,19 @@ Student: Shattyk Rahmetolla, Assel Sergazy
 - **Assignment & Quiz Engine:** Differentiated worksheets and multi-choice quizzes.
 - **Edu-Games Suite:** Gamified review tools including Flashcards, Quiz Arena, and Pair Matching.
 
-### 📍 Жобаның қазіргі күйі (v0.2.0)
+### 📍 Жобаның қазіргі күйі (v0.3.0)
 
 | Кезең | Күйі |
 | --- | --- |
 | Deliverable 1: React + Vite frontend (ҚМЖ генераторының прототипі) | ✅ Дайын |
-| **Deliverable 2: ERD, реляциялық схема және архитектуралық негіздеме** | ✅ **Дайын, осы релиз** |
-| Backend API және frontend-ті дерекқорға қосу | ⏳ Келесі кезең |
+| Deliverable 2: ERD, реляциялық схема және архитектуралық негіздеме (v0.2.0) | ✅ Дайын |
+| **Deliverable 3: SRS and UML (v0.3.0)**: талаптар, персоналар, use case, activity, state machine, CRC, class, sequence диаграммалары | ✅ **Дайын, осы нұсқа** |
+| Backend API, аутентификация және frontend-ті дерекқорға қосу | ⏳ Келесі кезең (талаптарда "Planned (v0.3+)" деп белгіленген) |
 | Презентация, жұмыс парағы, оқушы аккаунттары | 🗓 Жоспарда |
+
+**v0.3.0 нұсқасында не жасалды (тек құжаттама):**
+- [docs/specifications.md](./docs/specifications.md): мәселе мен шешім кеңістігі, 3 персона, MoSCoW басымдығы мен статусы бар FR-01…FR-20, сандық NFR-лар, трассалау матрицасы.
+- [docs/diagrams/](./docs/diagrams/): Mermaid форматындағы UML диаграммалары (GitHub-та тікелей көрсетіледі). Әр элемент "Implemented" немесе "Planned (v0.3+)" деп белгіленген.
 
 **v0.2.0 нұсқасында не жасалды:**
 - 14 кестеден тұратын PostgreSQL 16 схемасы: мұғалімдер, пәндер, сыныптар, оқу мақсаттары, ҚМЖ және оның кезеңдері, сабақ кестесі, викториналар, флэш-карталар ([prisma/schema.prisma](./prisma/schema.prisma)).
@@ -72,4 +77,7 @@ The frontend is not connected to the database yet. Lesson plans generated in the
 | `prisma/schema.prisma` | Executable Prisma schema |
 | `prisma/migrations/` | SQL migration including CHECK constraints |
 | `prisma/seed.sql` | Fictional sample data |
-| `specifications.md`, `development.md` | Product requirements and developer guide |
+| `docs/specifications.md` | Software requirements specification: problem/solution space, personas, FRs, NFRs, traceability |
+| `docs/diagrams/behavioral/` | Use case (`use-case.md`), activity (`activity.md`) and state machine (`state-machine.md`) diagrams |
+| `docs/diagrams/structural/` | CRC cards (`crc-cards.md`), class diagram (`class-diagram.md`) and sequence diagrams (`sequence.md`) |
+| `development.md` | Developer guide |

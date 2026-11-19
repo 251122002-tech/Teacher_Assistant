@@ -49,6 +49,12 @@ Fictional sample data for every table. The ten teachers, classes and dates are c
 
 `database-schema.md` is the Deliverable 2 report. `erd.svg` is the diagram source, and `erd.png` and `erd.pdf` are exports of it.
 
+`specifications.md` is the software requirements specification (Deliverable 3). `diagrams/behavioral/` and `diagrams/structural/` hold the UML diagrams as Mermaid code blocks inside Markdown, which GitHub renders directly. To check that every diagram parses locally, run the Mermaid CLI on a file. It needs a Chromium-based browser and is not a project dependency:
+
+```sh
+npx -y @mermaid-js/mermaid-cli -i docs/diagrams/structural/sequence.md -o out/sequence.md
+```
+
 ## 4. Verification Commands
 
 Build the frontend after changes:
