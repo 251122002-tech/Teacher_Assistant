@@ -14,28 +14,30 @@ Teacher Assistant aims to reduce teacher workload with educational planning and 
 ## 3. Core Workflow
 
 1. The user opens the lesson-plan generator.
-2. The user selects a subject and enters a topic.
-3. The user submits the form and sees loading feedback.
-4. The frontend requests sample post content from JSONPlaceholder and presents up to six entries as lesson-plan modules.
-5. The interface announces success or a request error.
+2. The user selects a subject and a grade (1-11) and enters a topic.
+3. The user presses the Generate Lesson Plan button below the form fields.
+4. The user sees loading feedback.
+5. The frontend requests sample post content from JSONPlaceholder and presents up to six entries as lesson-plan modules.
+6. The interface announces success or a request error.
 
 ## 4. Functional Requirements
 
 | ID | Requirement | Acceptance criteria |
 | --- | --- | --- |
-| FR-01 | Display the lesson-plan generator. | The page shows the subject selector, topic field, submit control, status region, and generated-module area. |
+| FR-01 | Display the lesson-plan generator. | The page shows the subject selector, grade selector, topic field, a submit control placed below the fields, status region, and generated-module area. |
 | FR-02 | Validate the topic. | A blank or whitespace-only topic does not start a request and receives helpful status feedback. |
 | FR-03 | Limit topic length. | The topic field enforces a maximum length of 80 characters. |
-| FR-04 | Generate sample modules. | A successful response renders up to six modules with title, subject, target grade, learning objectives, duration, and activity. |
+| FR-04 | Generate sample modules. | A successful response renders up to six modules with title, subject, target grade (the selected grade), learning objectives, duration, and activity. |
 | FR-05 | Report request status. | The interface announces loading and successful generation through the status region. |
 | FR-06 | Handle request failures. | A failed request clears stale generated modules and announces an error. |
+| FR-07 | Validate the grade. | Submitting without a grade from 1 to 11 does not start a request, shows a field-level error under the grade selector, announces it in the status region, and moves focus to the grade selector. The error clears once a valid grade is chosen. |
 
 ## 5. Non-Functional Requirements
 
 ### Accessibility
 
 - Use semantic landmarks and native form controls.
-- Associate visible labels with the subject and topic controls.
+- Associate visible labels with the subject, grade, and topic controls.
 - Keep controls keyboard reachable with visible focus states.
 - Announce dynamic status using a live region.
 
@@ -54,7 +56,7 @@ Teacher Assistant aims to reduce teacher workload with educational planning and 
 
 ## 6. Current State and Data Limitations
 
-- The frontend tracks selected subject, topic, generated sample modules, loading state, and status feedback in React state.
+- The frontend tracks selected subject, grade, grade validation error, topic, generated sample modules, loading state, and status feedback in React state.
 - Module objectives come from JSONPlaceholder post bodies. The returned content is sample placeholder data, not verified curriculum content or AI-generated lesson plans.
 - Generation requires network access to `https://jsonplaceholder.typicode.com/posts`.
 - State is in memory and resets on page refresh.
@@ -63,6 +65,7 @@ Teacher Assistant aims to reduce teacher workload with educational planning and 
 
 - [ ] The app builds with `npm run build`.
 - [ ] An empty or whitespace-only topic is rejected before the request.
+- [ ] A missing grade is rejected before the request with a field-level error.
 - [ ] A valid topic can generate up to six modules when the sample service is available.
 - [ ] Generated modules show all required fields.
 - [ ] Request failure clears modules and displays an accessible error status.

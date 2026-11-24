@@ -35,7 +35,7 @@ Defines design tokens, typography, educational color contrast, responsive card-g
 
 ### `frontend/app.jsx`
 
-Mounts the React application. The app owns subject/topic form state, validates the topic, fetches source content, maps it into lesson-plan modules, and renders cards and status updates.
+Mounts the React application. The app owns subject/grade/topic form state, validates the grade and topic, fetches source content, maps it into lesson-plan modules, and renders cards and status updates.
 
 ## 4. Verification Commands
 
@@ -55,11 +55,12 @@ npm run dev
 
 1. Load the page at a desktop width.
 2. Submit with an empty topic and confirm the helpful message appears and focus returns to the topic input.
-3. Select a subject, enter a topic, and generate the lesson plan.
-4. Confirm the generated cards include target grade, learning objectives, duration, and key activities.
-5. Confirm the status message and module count update.
-6. Repeat the pass at a narrow mobile width.
-7. Navigate through the controls with the keyboard and confirm visible focus.
+3. Enter a topic without choosing a grade, submit, and confirm the grade error appears under the grade selector and focus moves to it.
+4. Select a subject and grade, enter a topic, and generate the lesson plan with the button below the fields.
+5. Confirm the generated cards show the selected grade as the target grade, plus learning objectives, duration, and key activities.
+6. Confirm the status message and module count update.
+7. Repeat the pass at a narrow mobile width.
+8. Navigate through the controls with the keyboard and confirm visible focus.
 
 ## 6. Change Workflow
 

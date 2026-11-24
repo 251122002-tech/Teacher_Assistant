@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const lessonPlansEndpoint = 'https://jsonplaceholder.typicode.com/posts';
+const gradeOptions = Array.from({ length: 11 }, (_, offset) => String(offset + 1));
 
 function LessonPlanCard({ plan, subject, topic }) {
   const details = [
@@ -30,20 +31,36 @@ function LessonPlanCard({ plan, subject, topic }) {
 
 function App() {
   const [subject, setSubject] = useState('Science');
+  const [grade, setGrade] = useState('');
+  const [gradeError, setGradeError] = useState('');
   const [topic, setTopic] = useState('');
   const [plans, setPlans] = useState([]);
   const [generatedContext, setGeneratedContext] = useState({ subject: '', topic: '' });
   const [hasGenerated, setHasGenerated] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('Choose a subject and topic to begin.');
+  const [statusMessage, setStatusMessage] = useState('Choose a subject, grade, and topic to begin.');
   const [isLoading, setIsLoading] = useState(false);
+  const gradeSelectRef = useRef(null);
   const topicInputRef = useRef(null);
   const recordCount = hasGenerated
     ? `${plans.length} ${plans.length === 1 ? 'module' : 'modules'}`
     : 'No plans generated';
 
+  function handleGradeChange(event) {
+    const nextGrade = event.target.value;
+    setGrade(nextGrade);
+    setGradeError(gradeOptions.includes(nextGrade) ? '' : 'Select a grade from 1 to 11.');
+  }
+
   async function loadDashboardData(event) {
     event.preventDefault();
     if (isLoading) return;
+
+    if (!gradeOptions.includes(grade)) {
+      setGradeError('Select a grade from 1 to 11.');
+      setStatusMessage('Select a grade before generating a lesson plan.');
+      gradeSelectRef.current?.focus();
+      return;
+    }
 
     const selectedTopic = topic.trim();
     if (!selectedTopic) {
@@ -65,7 +82,7 @@ function App() {
       const generatedPlans = sourcePosts.slice(0, 6).map((post, index) => ({
         id: post.id,
         title: `${selectedTopic}: ${post.title}`,
-        targetGrade: `Grade ${5 + (index % 4)}`,
+        targetGrade: `Grade ${grade}`,
         objectives: post.body,
         duration: `${35 + (index % 3) * 10} minutes`,
         activities: `Explore, discuss, and apply ${subject.toLowerCase()} concepts through a guided activity.`
@@ -74,7 +91,7 @@ function App() {
       setPlans(generatedPlans);
       setGeneratedContext({ subject, topic: selectedTopic });
       setHasGenerated(true);
-      setStatusMessage(`Generated ${generatedPlans.length} lesson plan modules for ${selectedTopic}.`);
+      setStatusMessage(`Generated ${generatedPlans.length} lesson plan modules for ${selectedTopic}, grade ${grade}.`);
     } catch (error) {
       setPlans([]);
       setHasGenerated(false);
@@ -93,9 +110,6 @@ function App() {
             <span className="brand-mark" aria-hidden="true">TA</span>
             <span>Teacher Assistant</span>
           </a>
-          <button className="button button-primary" type="submit" form="plan-form" disabled={isLoading}>
-            {isLoading ? 'Generating...' : 'Generate Lesson Plan'}
-          </button>
         </div>
       </header>
 
@@ -103,7 +117,7 @@ function App() {
         <section className="hero" aria-labelledby="page-title">
           <p className="eyebrow">Plan with purpose</p>
           <h1 id="page-title">Build a lesson worth remembering.</h1>
-          <p className="hero-copy">Choose a subject and topic to create a practical starting point for your next class.</p>
+          <p className="hero-copy">Choose a subject, grade, and topic to create a practical starting point for your next class.</p>
         </section>
 
         <section className="planner" aria-labelledby="planner-title">
@@ -131,6 +145,25 @@ function App() {
                 <option value="Art">Art</option>
               </select>
             </div>
+            <div className="field-group">
+              <label htmlFor="grade-select">Grade</label>
+              <select
+                ref={gradeSelectRef}
+                id="grade-select"
+                name="grade"
+                value={grade}
+                onChange={handleGradeChange}
+                aria-invalid={gradeError ? 'true' : 'false'}
+                aria-describedby={gradeError ? 'grade-error' : undefined}
+                aria-required="true"
+              >
+                <option value="">Select grade</option>
+                {gradeOptions.map((gradeOption) => (
+                  <option key={gradeOption} value={gradeOption}>Grade {gradeOption}</option>
+                ))}
+              </select>
+              {gradeError && <p className="field-error" id="grade-error">Error: {gradeError}</p>}
+            </div>
             <div className="field-group field-group-wide">
               <label htmlFor="topic-input">Topic</label>
               <input
@@ -144,6 +177,11 @@ function App() {
                 onChange={(event) => setTopic(event.target.value)}
                 required
               />
+            </div>
+            <div className="form-actions">
+              <button className="button button-primary" type="submit" disabled={isLoading}>
+                {isLoading ? 'Generating...' : 'Generate Lesson Plan'}
+              </button>
             </div>
           </form>
 
