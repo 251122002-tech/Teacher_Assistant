@@ -5,7 +5,7 @@ Sequence diagrams show the order of messages between objects for one scenario. T
 1. **SEQ-1: Teacher saves a generated lesson plan** (`POST /api/lesson-plans`), with every failure branch.
 2. **SEQ-2: Teacher logs in** (`POST /api/auth/login`), with lockout.
 
-**Status: Planned (v0.3+).** No API, gateway or authentication exists yet. The only Implemented parts are the client-side topic check (FR-02, FR-03) and the live status region (FR-05, FR-06), which these diagrams reuse. Endpoints and status codes match the SRS API table ([specifications.md §7.1](../../specifications.md#71-planned-rest-api-surface-v03)) and the [activity diagram](../behavioral/activity.md).
+**Status:** SEQ-2 (login) is **Implemented** by `POST /api/auth/login`; the refresh token is returned in an HttpOnly cookie rather than the JSON body. SEQ-1 (save) is **Planned (v0.3+)**; of it, the client-side topic check (FR-02, FR-03), the live status region (FR-05, FR-06) and the `401` → refresh → retry branch are Implemented. Endpoints and status codes match the SRS API table ([specifications.md §7.1](../../specifications.md#71-planned-rest-api-surface-v03)) and the [activity diagram](../behavioral/activity.md).
 
 ## SEQ-1: Teacher saves a generated lesson plan
 
@@ -151,11 +151,11 @@ sequenceDiagram
 | Client-side topic check (SEQ-1 step 2) | FR-02, FR-03 | Implemented (in the generator form today) |
 | Live-region updates in every branch | FR-05, FR-06, NFR-AC1 | Implemented (live region), Planned (new messages) |
 | `POST /api/lesson-plans` → `201` | FR-10, UC-07 | Planned (v0.3+) |
-| `401` + `opt` refresh | FR-09, NFR-S2, UC-05/UC-06 | Planned (v0.3+) |
+| `401` + `opt` refresh | FR-09, NFR-S2, UC-05/UC-06 | Implemented (`frontend/apiClient.js`) |
 | `400` validation | FR-02, FR-03, FR-10 | Planned (v0.3+) |
 | `422` / `409` + ROLLBACK | FR-10, NFR-D1, NFR-D2, DM-04 | Planned (v0.3+). The CHECK and UNIQUE constraints themselves are Implemented. |
 | `503` + `opt` retry | NFR-A1, NFR-P1 | Planned (v0.3+) |
-| SEQ-2 `POST /api/auth/login`, `423` lockout | FR-08, NFR-S1, NFR-S5, UC-05 | Planned (v0.3+). Needs the `failed_login_attempts` / `locked_until` / refresh-token migration. |
+| SEQ-2 `POST /api/auth/login`, `423` lockout | FR-08, NFR-S1, NFR-S5, UC-05 | Implemented (v0.3 migration `20261126000000_auth_sessions`) |
 
 - Participants match the [class diagram](./class-diagram.md): `AuthMiddleware`, `AuthService` and `LessonPlanService` are the same classes. The API Gateway is the HTTP layer that hosts `AuthMiddleware`. `LessonPlanRepository` is folded into the `LessonPlanService` → PostgreSQL messages to keep SEQ-1 readable.
 - PostgreSQL error codes: `23514` check_violation, `23505` unique_violation, `23503` foreign_key_violation (the last one is used by delete, FR-19).

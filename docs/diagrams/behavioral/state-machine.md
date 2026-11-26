@@ -5,7 +5,7 @@ This document has two state machines:
 1. **LessonPlan lifecycle:** the states of one `lesson_plans` row.
 2. **User session lifecycle:** the authentication states of one browser session.
 
-Every transition is labelled `event [guard] / action`. Both machines are **Planned (v0.3+)**: the prototype keeps generated modules in memory and has neither a status field nor a login. The LessonPlan states are already enforced in the database by `lesson_plans_status_chk` (`status IN ('DRAFT','PUBLISHED','ARCHIVED')`).
+Every transition is labelled `event [guard] / action`. The LessonPlan machine is **Planned (v0.3+)**: generated modules are kept in memory and have no status field yet. The session machine is **Implemented** in `server/authService.js`, `server/tokenService.js` and `frontend/apiClient.js`. The LessonPlan states are already enforced in the database by `lesson_plans_status_chk` (`status IN ('DRAFT','PUBLISHED','ARCHIVED')`).
 
 ## 1. LessonPlan lifecycle
 
@@ -102,7 +102,7 @@ stateDiagram-v2
 | T5 schedule, T6/T8/T9 `class_lessons = 0` guards | FR-12, FR-15, FR-19 | `class_lessons` UNIQUE + `ON DELETE RESTRICT` | Planned (v0.3+) |
 | T7 archive by ADMIN | FR-18 | `users.role` + `users_role_chk` | Planned (v0.3+) |
 | T9 delete actions | FR-19 | CASCADE on modules and objectives, SET NULL on `quizzes.lesson_plan_id` and `flashcard_decks.lesson_plan_id` | Planned (v0.3+) |
-| Session machine | FR-07, FR-08, FR-09, NFR-S2, NFR-S5 | `users.is_active`. **Needs a planned v0.3 migration:** `users.failed_login_attempts`, `users.locked_until` and a `refresh_tokens` table. | Planned (v0.3+) |
+| Session machine | FR-07, FR-08, FR-09, NFR-S2, NFR-S5 | `users.is_active`, `users.failed_login_attempts`, `users.last_failed_login_at`, `users.locked_until`, `refresh_tokens` (v0.3 migration `20261126000000_auth_sessions`) | Implemented. The refresh token is kept in an HttpOnly cookie and the access token in page memory. |
 
 - Event names map one-to-one to the endpoints in specifications.md §7.1 and to the methods `publish()`, `unpublish()`, `archive()`, `restore()` and `canPublish()` on `LessonPlan` in the [class diagram](../structural/class-diagram.md).
 - Related use cases: UC-07, UC-08, UC-09, UC-11, UC-12, UC-16, UC-17 (lesson plan) and UC-04, UC-05, UC-06 (session).

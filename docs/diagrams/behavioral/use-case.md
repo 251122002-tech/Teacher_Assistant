@@ -17,7 +17,7 @@ One diagram with all 18 use cases did not lay out legibly in Mermaid, so the mod
 ```mermaid
 flowchart TB
     Teacher["👤 Teacher<br/>(role TEACHER)"]
-    External["⚙️ External content / AI service<br/>(JSONPlaceholder today)"]
+    External["⚙️ External content / AI service<br/>(not connected yet; plans use local templates)"]
 
     subgraph SYS["Teacher Assistant (system boundary)"]
         UC01(["UC-01 Generate Lesson Plan"])
@@ -175,7 +175,7 @@ flowchart TB
 | Includes / Extends | Extends UC-01 at the extension point "content request failed" |
 | Related FRs | FR-06 |
 
-### UC-04 Register Account: Planned (v0.3+)
+### UC-04 Register Account: Implemented
 
 | Field | Value |
 | --- | --- |
@@ -188,7 +188,7 @@ flowchart TB
 | Includes / Extends | none |
 | Related FRs | FR-07 |
 
-### UC-05 Authenticate (Log In): Planned (v0.3+)
+### UC-05 Authenticate (Log In): Implemented
 
 | Field | Value |
 | --- | --- |
@@ -201,7 +201,7 @@ flowchart TB
 | Includes / Extends | Included by UC-07 and UC-16 (and, by precondition, every planned teacher and admin use case) |
 | Related FRs | FR-08 |
 
-### UC-06 Log Out: Planned (v0.3+)
+### UC-06 Log Out: Implemented
 
 | Field | Value |
 | --- | --- |
@@ -377,9 +377,9 @@ flowchart TB
 | UC-01 | FR-01, FR-04, FR-05 | Implemented | [activity](./activity.md) |
 | UC-02 | FR-02, FR-03 | Implemented | [activity](./activity.md), [sequence](../structural/sequence.md) (400 branch) |
 | UC-03 | FR-06 | Implemented | [activity](./activity.md) |
-| UC-04 | FR-07 | Planned (v0.3+) | [state-machine](./state-machine.md) (session) |
-| UC-05 | FR-08 | Planned (v0.3+) | [state-machine](./state-machine.md), [sequence](../structural/sequence.md) (login) |
-| UC-06 | FR-09 | Planned (v0.3+) | [state-machine](./state-machine.md) |
+| UC-04 | FR-07 | Implemented | [state-machine](./state-machine.md) (session) |
+| UC-05 | FR-08 | Implemented | [state-machine](./state-machine.md), [sequence](../structural/sequence.md) (login) |
+| UC-06 | FR-09 | Implemented | [state-machine](./state-machine.md) |
 | UC-07 | FR-10 | Planned (v0.3+) | [activity](./activity.md), [sequence](../structural/sequence.md), [state-machine](./state-machine.md) |
 | UC-08 | FR-11 | Planned (v0.3+) | [state-machine](./state-machine.md) |
 | UC-09 | FR-12 | Planned (v0.3+) | [state-machine](./state-machine.md) |

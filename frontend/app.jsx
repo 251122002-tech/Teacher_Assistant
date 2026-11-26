@@ -2,14 +2,14 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { createRoot } from 'react-dom/client';
 import {
   gradeOptions,
-  isDefaultSubject,
-  subjectOptions,
+  validateCustomSubjectName,
   validateLessonRequest,
   validateRegistration,
-  validateSignIn,
-  validateSubject
+  validateSignIn
 } from '../shared/validation.js';
 import { gradeLabel, subjectLabel, supportedLanguages } from '../shared/lessonTemplates.js';
+import * as apiClient from './apiClient.js';
+import { apiRequest } from './apiClient.js';
 import { translations } from './translations.js';
 import './styles.css';
 
@@ -45,36 +45,18 @@ function formatMessage(t, language, message) {
   return t.status[message.key].replace(/\{(\w+)\}/g, (placeholder, name) => values[name] ?? placeholder);
 }
 
-async function apiRequest(path, { method = 'GET', body } = {}) {
-  let response;
-  try {
-    response = await fetch(path, {
-      method,
-      credentials: 'same-origin',
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      body: body ? JSON.stringify(body) : undefined
-    });
-  } catch {
-    throw Object.assign(new Error('cannotReachServer'), { code: 'cannotReachServer', status: 0, fieldErrors: {} });
-  }
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const code = payload.error ?? 'unknown';
-    throw Object.assign(new Error(code), { code, status: response.status, fieldErrors: payload.fieldErrors ?? {} });
-  }
-  return payload;
-}
-
-// The subject picker stores a list choice plus free text; these convert to and from one subject string.
+// The subject picker stores a list choice (a subject id) plus free text for "Other".
+// These convert between that picker state and the API's subject objects.
 function splitSubject(subject) {
   if (!subject) return { subjectChoice: '', customSubject: '' };
-  return isDefaultSubject(subject)
-    ? { subjectChoice: subject, customSubject: '' }
-    : { subjectChoice: otherSubjectChoice, customSubject: subject };
+  return subject.isCustom
+    ? { subjectChoice: otherSubjectChoice, customSubject: subject.name }
+    : { subjectChoice: String(subject.id), customSubject: '' };
 }
 
-function resolveSubject(subjectChoice, customSubject) {
-  return subjectChoice === otherSubjectChoice ? customSubject.trim() : subjectChoice;
+function subjectInput(subjectChoice, customSubject) {
+  if (subjectChoice === otherSubjectChoice) return { name: customSubject.trim() };
+  return subjectChoice ? { id: Number(subjectChoice) } : null;
 }
 
 function usePageTitle(pageTitle) {
@@ -180,7 +162,7 @@ function AuthPanel({ onAuthenticated }) {
     setIsSubmitting(true);
     setAuthMessage({ key: isRegistering ? 'creating' : 'signingIn' });
     try {
-      const { user } = await apiRequest(isRegistering ? '/api/register' : '/api/login', { method: 'POST', body: values });
+      const { user } = await (isRegistering ? apiClient.register(values) : apiClient.signIn(values));
       onAuthenticated(user, { key: isRegistering ? 'welcomeNew' : 'welcomeBack', params: { name: user.firstName } });
     } catch (error) {
       setFieldErrors(error.fieldErrors);
@@ -250,7 +232,7 @@ function AuthPanel({ onAuthenticated }) {
           label={t.auth.password}
           type="password"
           autoComplete={isRegistering ? 'new-password' : 'current-password'}
-          maxLength={128}
+          maxLength={72}
           value={isRegistering ? registration.password : signIn.password}
           onChange={(event) => updateField('password', event.target.value)}
           errorCode={fieldErrors.password}
@@ -267,7 +249,7 @@ function AuthPanel({ onAuthenticated }) {
   );
 }
 
-function AuthPage({ sessionErrorCode, onAuthenticated }) {
+function AuthPage({ notice, onAuthenticated }) {
   const { language, t } = useLanguage();
   usePageTitle(t.pageTitles.auth);
   return (
@@ -277,9 +259,9 @@ function AuthPage({ sessionErrorCode, onAuthenticated }) {
         <h1 id="page-title">{t.auth.heading}</h1>
         <p className="hero-copy">{t.auth.intro}</p>
       </section>
-      {sessionErrorCode && (
+      {notice && (
         <div className="status-message status-error" role="alert">
-          {t.errorPrefix}: {formatMessage(t, language, { key: 'sessionFailed', params: { reasonCode: sessionErrorCode } })}
+          {t.errorPrefix}: {formatMessage(t, language, notice)}
         </div>
       )}
       <AuthPanel onAuthenticated={onAuthenticated} />
@@ -288,7 +270,7 @@ function AuthPage({ sessionErrorCode, onAuthenticated }) {
 }
 
 // A list of default subjects plus "Other", which reveals a text field for the teacher's own subject.
-function SubjectPicker({ subjectChoice, customSubject, onChoiceChange, onCustomChange, errorCode, disabled }) {
+function SubjectPicker({ subjects, subjectChoice, customSubject, onChoiceChange, onCustomChange, errorCode, disabled }) {
   const { language, t } = useLanguage();
   const isOther = subjectChoice === otherSubjectChoice;
   const customInputRef = useRef(null);
@@ -314,8 +296,8 @@ function SubjectPicker({ subjectChoice, customSubject, onChoiceChange, onCustomC
           aria-describedby={errorCode && !isOther ? 'subject-select-error' : undefined}
         >
           {!subjectChoice && <option value="">{t.planner.selectSubject}</option>}
-          {subjectOptions.map((subjectOption) => (
-            <option key={subjectOption} value={subjectOption}>{subjectLabel(subjectOption, language)}</option>
+          {subjects.map((subject) => (
+            <option key={subject.id} value={String(subject.id)}>{subjectLabel(subject, language)}</option>
           ))}
           <option value={otherSubjectChoice}>{t.planner.otherSubject}</option>
         </select>
@@ -369,6 +351,7 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
   const { language, t } = useLanguage();
   const [subjectChoice, setSubjectChoice] = useState(() => splitSubject(user.subject).subjectChoice);
   const [customSubject, setCustomSubject] = useState(() => splitSubject(user.subject).customSubject);
+  const [subjects, setSubjects] = useState([]);
   const [subjectError, setSubjectError] = useState('');
   const [isSavingSubject, setIsSavingSubject] = useState(false);
   const [grade, setGrade] = useState('');
@@ -377,14 +360,18 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
   const [topicError, setTopicError] = useState('');
   const [plans, setPlans] = useState([]);
   const [lastRequest, setLastRequest] = useState(null);
+  const [planSubject, setPlanSubject] = useState(null);
   const [statusMessage, setStatusMessage] = useState(initialMessage);
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef(null);
   const recordCount = lastRequest ? t.planner.stageCount(plans.length) : t.planner.noPlans;
 
-  function handleAuthLoss(error) {
-    if (error.status === 401) onUserUpdated(null);
-  }
+  // The default subject list comes from the subjects table.
+  useEffect(() => {
+    apiRequest('/api/subjects')
+      .then(({ subjects: curriculumSubjects }) => setSubjects(curriculumSubjects))
+      .catch((error) => setStatusMessage({ key: 'subjectsFailed', params: { reasonCode: error.code } }));
+  }, []);
 
   // Default subjects save right away; "Other" waits until the typed subject is used to generate a plan.
   async function handleSubjectChoiceChange(nextChoice) {
@@ -394,22 +381,22 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
       setStatusMessage({ key: 'typeSubject' });
       return;
     }
-    if (!isDefaultSubject(nextChoice)) {
+    const chosenSubject = subjects.find((subject) => String(subject.id) === nextChoice);
+    if (!chosenSubject) {
       setSubjectError('subjectRequired');
       return;
     }
-    if (nextChoice === user.subject) return;
+    if (chosenSubject.id === user.subject?.id) return;
 
     setIsSavingSubject(true);
-    setStatusMessage({ key: 'savingSubject', params: { subject: nextChoice } });
+    setStatusMessage({ key: 'savingSubject', params: { subject: chosenSubject } });
     try {
-      const { user: updatedUser } = await apiRequest('/api/me/subject', { method: 'PUT', body: { subject: nextChoice } });
+      const { user: updatedUser } = await apiRequest('/api/me/subject', { method: 'PUT', body: { subject: { id: chosenSubject.id } } });
       onUserUpdated(updatedUser);
       setStatusMessage({ key: 'subjectSaved', params: { subject: updatedUser.subject } });
     } catch (error) {
       setSubjectError(error.fieldErrors.subject ?? '');
       setStatusMessage({ key: 'subjectSaveFailed', params: { reasonCode: error.code } });
-      handleAuthLoss(error);
     } finally {
       setIsSavingSubject(false);
     }
@@ -417,7 +404,7 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
 
   function handleCustomSubjectChange(nextCustom) {
     setCustomSubject(nextCustom);
-    if (subjectError) setSubjectError(validateSubject(nextCustom.trim()));
+    if (subjectError) setSubjectError(validateCustomSubjectName(nextCustom.trim()));
   }
 
   function handleGradeChange(event) {
@@ -435,9 +422,10 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
     setIsLoading(true);
     setStatusMessage({ key: 'building' });
     try {
-      const { modules, user: updatedUser } = await apiRequest('/api/lesson-plans/generate', { method: 'POST', body: lessonRequest });
+      const { modules, subject, user: updatedUser } = await apiRequest('/api/lesson-plans/generate', { method: 'POST', body: lessonRequest });
       setPlans(modules);
       setLastRequest(lessonRequest);
+      setPlanSubject(subject);
       onUserUpdated(updatedUser);
       setStatusMessage({
         key: 'generated',
@@ -447,7 +435,6 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
       setPlans([]);
       setLastRequest(null);
       setStatusMessage({ key: 'generateFailed', params: { reasonCode: error.code } });
-      handleAuthLoss(error);
     } finally {
       setIsLoading(false);
     }
@@ -465,7 +452,7 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
     if (isLoading || isSavingSubject) return;
 
     const { values, fieldErrors } = validateLessonRequest({
-      subject: resolveSubject(subjectChoice, customSubject),
+      subject: subjectInput(subjectChoice, customSubject),
       grade,
       topic,
       language
@@ -497,6 +484,7 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
 
       <form className="plan-form" id="plan-form" ref={formRef} onSubmit={handleGenerate} noValidate>
         <SubjectPicker
+          subjects={subjects}
           subjectChoice={subjectChoice}
           customSubject={customSubject}
           onChoiceChange={handleSubjectChoiceChange}
@@ -548,7 +536,7 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
       <StatusMessage message={statusMessage} />
       <div className="card-grid" aria-live="polite" aria-label={t.planner.plansLabel}>
         {plans.map((plan) => (
-          <LessonPlanCard key={plan.id} plan={plan} subject={lastRequest.subject} topic={lastRequest.topic} />
+          <LessonPlanCard key={plan.id} plan={plan} subject={planSubject} topic={lastRequest.topic} />
         ))}
       </div>
     </section>
@@ -575,7 +563,7 @@ function App() {
   // undefined while the saved session is being checked, null when signed out.
   const [user, setUser] = useState(undefined);
   const [plannerMessage, setPlannerMessage] = useState({ key: 'checking' });
-  const [sessionErrorCode, setSessionErrorCode] = useState('');
+  const [authNotice, setAuthNotice] = useState(null);
   const t = translations[language];
 
   useEffect(() => {
@@ -583,8 +571,13 @@ function App() {
     window.localStorage.setItem(languageStorageKey, language);
   }, [language]);
 
+  // Restore the session from the refresh cookie; a 401 simply means nobody is signed in.
   useEffect(() => {
-    apiRequest('/api/me')
+    apiClient.onSessionExpired(() => {
+      setAuthNotice({ key: 'plainError', params: { reasonCode: 'sessionExpired' } });
+      setUser(null);
+    });
+    apiClient.refreshSession()
       .then(({ user: savedUser }) => {
         setPlannerMessage(savedUser.subject
           ? { key: 'welcomeBackSubject', params: { name: savedUser.firstName, subject: savedUser.subject } }
@@ -593,12 +586,12 @@ function App() {
       })
       .catch((error) => {
         setUser(null);
-        if (error.status !== 401) setSessionErrorCode(error.code);
+        if (error.status !== 401) setAuthNotice({ key: 'sessionFailed', params: { reasonCode: error.code } });
       });
   }, []);
 
   function handleAuthenticated(authenticatedUser, welcomeMessage) {
-    setSessionErrorCode('');
+    setAuthNotice(null);
     setPlannerMessage(welcomeMessage);
     setUser(authenticatedUser);
     window.scrollTo(0, 0);
@@ -606,7 +599,7 @@ function App() {
 
   async function signOut() {
     try {
-      await apiRequest('/api/logout', { method: 'POST' });
+      await apiClient.signOut();
     } finally {
       setUser(null);
     }
@@ -637,7 +630,7 @@ function App() {
           <StatusMessage message={{ key: 'checking' }} />
         </main>
       )}
-      {user === null && <AuthPage sessionErrorCode={sessionErrorCode} onAuthenticated={handleAuthenticated} />}
+      {user === null && <AuthPage notice={authNotice} onAuthenticated={handleAuthenticated} />}
       {user && <PlannerPage user={user} initialMessage={plannerMessage} onUserUpdated={setUser} />}
     </LanguageContext.Provider>
   );

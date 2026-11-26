@@ -2,17 +2,25 @@
 // frontend shows subject names from one source.
 export const supportedLanguages = ['kk', 'ru', 'en'];
 
+// Names for the curriculum subjects in prisma/seed.sql, keyed by subjects.code.
+// Subjects without an entry (for example a teacher's own subject) show their stored name.
 export const subjectNames = {
-  Science: { kk: 'Жаратылыстану', ru: 'Естествознание', en: 'Science' },
-  Mathematics: { kk: 'Математика', ru: 'Математика', en: 'Mathematics' },
-  'Language Arts': { kk: 'Тіл және әдебиет', ru: 'Язык и литература', en: 'Language Arts' },
-  'Social Studies': { kk: 'Қоғамтану', ru: 'Обществознание', en: 'Social Studies' },
-  Art: { kk: 'Бейнелеу өнері', ru: 'Изобразительное искусство', en: 'Art' }
+  MATH: { kk: 'Математика', ru: 'Математика', en: 'Mathematics' },
+  PHYS: { kk: 'Физика', ru: 'Физика', en: 'Physics' },
+  KAZ_LANG: { kk: 'Қазақ тілі', ru: 'Казахский язык', en: 'Kazakh Language' },
+  HIST: { kk: 'Тарих', ru: 'История', en: 'History' },
+  BIO: { kk: 'Биология', ru: 'Биология', en: 'Biology' },
+  INF: { kk: 'Информатика', ru: 'Информатика', en: 'Informatics' },
+  ENG: { kk: 'Ағылшын тілі', ru: 'Английский язык', en: 'English' },
+  GEO: { kk: 'География', ru: 'География', en: 'Geography' },
+  CHEM: { kk: 'Химия', ru: 'Химия', en: 'Chemistry' },
+  PRIMARY: { kk: 'Бастауыш білім', ru: 'Начальное образование', en: 'Primary Education' }
 };
 
-// Default subjects are stored by their English key; custom subjects are stored as typed.
+// `subject` is a { code, name } object from the API.
 export function subjectLabel(subject, language) {
-  return subjectNames[subject]?.[language] ?? subject;
+  if (!subject) return '';
+  return subjectNames[subject.code]?.[language] ?? subject.name;
 }
 
 export function gradeLabel(grade, language) {

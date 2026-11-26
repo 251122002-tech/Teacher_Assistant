@@ -6,7 +6,7 @@ This diagram follows one teacher action from start to finish: generate modules f
 - **API Gateway:** the planned HTTP entry point that checks the JWT and routes requests.
 - **Backend Service & Database:** the planned LessonPlanService, the external content service, and PostgreSQL.
 
-**Implemented vs planned.** Green nodes work today in `frontend/app.jsx`. In the prototype, the browser calls JSONPlaceholder directly, with no gateway or backend. Dashed nodes are **Planned (v0.3+)**. The diagram shows the target flow, in which generation and saving both go through the API.
+**Implemented vs planned.** Green nodes work today in `frontend/app.jsx`. Generation already goes through the API (`POST /api/lesson-plans/generate`, built from local templates), and sign-in uses the v0.3 auth endpoints; the node colours have not been redrawn for this yet. Dashed nodes are **Planned (v0.3+)**. The diagram shows the target flow, in which generation and saving both go through the API.
 
 ## Diagram
 
@@ -106,7 +106,7 @@ flowchart TB
 | U1 to U3 (topic validation, focus, live region) | FR-01, FR-02, FR-03, NFR-AC1 | Implemented |
 | U4, U6 (loading and success announcements) | FR-04, FR-05 | Implemented |
 | B2 "no" → UE2 (clear and announce error) | FR-06 | Implemented (prototype path), Planned (`503` from API) |
-| G1/G4 → G3/G6 → UE1 (token check, 401, re-login) | FR-08, FR-09, NFR-S2 | Planned (v0.3+) |
+| G1/G4 → G3/G6 → UE1 (token check, 401, re-login) | FR-08, FR-09, NFR-S2 | Implemented (`frontend/apiClient.js` refreshes once on `401`, then shows the sign-in page) |
 | B1 timeout 10 s, B5 `503` | NFR-P2 | Planned (v0.3+) |
 | Fork B6 ∥ B7 → Join → B8 (payload and objective checks) | FR-10, FR-14 | Planned (v0.3+) |
 | B10 to B13 (single transaction, rollback) | FR-10, NFR-D1, NFR-D2 | Planned (v0.3+) |

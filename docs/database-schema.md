@@ -53,6 +53,11 @@ running games in class.
 
 ![Teacher Assistant ERD](./erd.png)
 
+> **v0.3 note:** the ERD images show the v0.2.0 schema. The v0.3 migration
+> `20261126000000_auth_sessions` adds three login-throttling columns to `users` and the
+> `refresh_tokens` table (one `users` 1 : 0..N `refresh_tokens` relationship, R19). They are
+> specified in 3.1, 3.15 and 4.1 but not yet drawn in `erd.png`, `erd.svg` or `erd.pdf`.
+
 How to read the diagram:
 
 - **PK** = primary key (highlighted row), **FK** = foreign key, **UK** = unique,
@@ -81,6 +86,9 @@ A person who signs in. Teachers author all content. Admins manage reference data
 | `is_active` | `BOOLEAN` | NOT NULL, default `true` | Soft deactivation flag (see 5.3). |
 | `created_at` | `TIMESTAMPTZ(6)` | NOT NULL, default `now()` | Registration time. |
 | `updated_at` | `TIMESTAMPTZ(6)` | NOT NULL | Last profile change. |
+| `failed_login_attempts` | `SMALLINT` | NOT NULL, default `0`, CHECK `users_failed_login_attempts_chk` (0–1000) | v0.3. Failed sign-ins in the current 15-minute window (NFR-S5). |
+| `last_failed_login_at` | `TIMESTAMPTZ(6)` | NULL | v0.3. Time of the last failed sign-in; starts a new window when older than 15 minutes. |
+| `locked_until` | `TIMESTAMPTZ(6)` | NULL | v0.3. Set to now + 15 min on the fifth failure; sign-in returns `423` until then. |
 
 ### 3.2 `subjects`
 
@@ -92,6 +100,10 @@ Lookup table of school subjects.
 | `code` | `VARCHAR(20)` | NOT NULL, UNIQUE, CHECK `^[A-Z0-9_]{2,20}$` | Stable machine code, e.g. `MATH`. |
 | `name` | `VARCHAR(80)` | NOT NULL, UNIQUE | Display name, e.g. `Mathematics`. |
 
+Since v0.3 the API also stores subjects a teacher types under "Other". They get a generated
+code `CUSTOM_` + 8 hex characters, are reused when the same name (case-insensitive) is typed
+again, and are not listed by `GET /api/subjects`, which returns only curriculum subjects.
+
 ### 3.3 `teacher_subjects` (junction, N:M `users` ↔ `subjects`)
 
 | Column | SQL type | Constraints | Description |
@@ -99,6 +111,9 @@ Lookup table of school subjects.
 | `user_id` | `UUID` | PK (part 1), FK → `users.id` ON DELETE CASCADE | The teacher. |
 | `subject_id` | `INTEGER` | PK (part 2), FK → `subjects.id` ON DELETE RESTRICT | The taught subject. |
 | `assigned_at` | `TIMESTAMPTZ(6)` | NOT NULL, default `now()` | When the subject was added to the profile. |
+
+Since v0.3 the API refreshes `assigned_at` whenever a teacher picks or generates with a
+subject; the link with the latest `assigned_at` is the subject the planner preselects.
 
 ### 3.4 `class_groups`
 
@@ -239,6 +254,20 @@ A multiple-choice quiz for the Quiz Arena game.
 | `back_text` | `VARCHAR(500)` | NOT NULL, CHECK not blank | Definition / answer side. |
 | | | UNIQUE (`deck_id`, `position`) | Stable ordering. |
 
+### 3.15 `refresh_tokens` (v0.3)
+
+One row per issued refresh token (FR-08, FR-09, NFR-S2). Only a hash of the token is stored.
+
+| Column | SQL type | Constraints | Description |
+| --- | --- | --- | --- |
+| `id` | `UUID` | PK, default `gen_random_uuid()` | Surrogate identifier. |
+| `user_id` | `UUID` | NOT NULL, FK → `users.id` ON DELETE CASCADE, B-Tree index | Token owner. |
+| `token_hash` | `CHAR(64)` | NOT NULL, UNIQUE, CHECK `refresh_tokens_token_hash_format_chk` (64 lowercase hex) | SHA-256 of the random token sent in the HttpOnly cookie. |
+| `expires_at` | `TIMESTAMPTZ(6)` | NOT NULL, CHECK `refresh_tokens_expiry_after_creation_chk` (`> created_at`) | Issue time + 7 days. |
+| `revoked_at` | `TIMESTAMPTZ(6)` | NULL | Set on rotation, logout or reuse detection. |
+| `replaced_by_id` | `UUID` | NULL | The token issued when this one was rotated (audit trail; not a FK). |
+| `created_at` | `TIMESTAMPTZ(6)` | NOT NULL, default `now()` | Issue time. |
+
 ---
 
 ## 4. Relationships, Cardinality and Referential Integrity
@@ -269,6 +298,7 @@ matters.
 | R16 | `users` | `flashcard_decks` | 1 : 0..N | `author_id` | RESTRICT | Same as R5. |
 | R17 | `lesson_plans` | `flashcard_decks` | 0..1 : 0..N | `lesson_plan_id` (nullable) | SET NULL | The deck survives as a standalone deck. |
 | R18 | `flashcard_decks` | `flashcards` | 1 : 0..N | `deck_id` | CASCADE | Cards are part of the deck. |
+| R19 | `users` | `refresh_tokens` | 1 : 0..N | `user_id` | CASCADE | Sessions belong to the user (v0.3). |
 
 ### 4.2 Many-to-many relationships and their junction entities
 
@@ -374,6 +404,7 @@ the unique keys of child tables.
 | `users` | `id`, `email` | `id → all`, `email → all` (both candidate keys) | ✓ |
 | `subjects` | `id`, `code`, `name` | candidate keys only | ✓ |
 | `teacher_subjects` | (`user_id`, `subject_id`) | key → `assigned_at` | ✓ |
+| `refresh_tokens` (v0.3) | `id`, `token_hash` | `id → all`, `token_hash → all` (both candidate keys) | ✓ |
 | `class_groups` | `id`, (`teacher_id`, `name`, `academic_year`) | key → `grade_level`, `student_count`, `created_at` | ✓ |
 | `learning_objectives` | `id`, (`subject_id`, `code`) | key → `grade_level`, `description` | ✓ |
 | `lesson_plans` | `id` | `id → author_id, subject_id, topic, grade_level, …` | ✓ |
@@ -525,12 +556,27 @@ npm run db:seed             # loads prisma/seed.sql
   `Index Scan using lesson_plans_author_id_created_at_idx` under the `Limit` node, with no Sort
   node.
 
+### 6.2.1 Verification of the v0.3 migration (2026-11-26)
+
+- `prisma migrate diff` between the v0.2.0 and v0.3 schemas generated the table/index/FK part
+  of `20261126000000_auth_sessions`; the CHECK block was appended by hand.
+- Both migrations and the seed were applied with `npm run db:migrate` and `npm run db:seed` to
+  PostgreSQL 19 (Postgres.app). The database has 15 tables; the three new CHECK constraints
+  exist.
+- API integration checks (43, all passing) exercised the new columns and table: bcrypt
+  `$2b$12$` hashes, the fifth failure setting `locked_until` and the sixth attempt returning
+  `423`, the counter resetting after the lock, refresh-token rotation and reuse detection
+  (`revoked_at`, `replaced_by_id`), logout revocation, and a 7-day-old token returning `401`.
+
 ### 6.3 Known limitations
 
-- The React frontend is not connected to the database yet. Generated plans still live only in
-  browser memory. A backend API is the next deliverable.
-- The business rules in 4.3 are specified but not implemented yet, because no service layer
-  exists.
+- The API reads and writes `users`, `refresh_tokens`, `subjects` and `teacher_subjects`.
+  Generated lesson plans are still not saved: `lesson_plans` and the tables below it are not
+  used by the app yet (FR-10 and later are Planned).
+- Business rules 1–4 in 4.3 concern plans, quizzes and objectives and are not implemented yet.
+  For rule 5, the API refuses sign-in, token refresh and authenticated requests when
+  `is_active = false`; there is no deactivation endpoint yet.
+- The ERD images do not show the v0.3 additions yet (see Section 2).
 - The seed's `password_hash` values are placeholders and cannot be used to sign in.
 - Presentations, worksheets, student accounts and quiz attempts are not modelled yet (see
   Section 1).

@@ -5,8 +5,8 @@
 - **Project:** Teacher Assistant
 - **Team:** Shattyk Rahmetolla, Assel Sergazy
 - **Document version:** 0.3.0 (Deliverable 3: System Analysis and UML). Supersedes the v0.2.0 specification.
-- **Current scope:** Lesson-plan generator prototype with interim teacher accounts and a Kazakh / Russian / English interface
-- **Status:** Prototype. A frontend and an interim Node.js + SQLite API (accounts, saved subject, plan generation) exist, and the PostgreSQL schema is designed and verified. The planned v0.3 API in Section 7.1 (JWT, PostgreSQL through Prisma) is not built yet.
+- **Current scope:** Lesson-plan generator prototype with teacher accounts (v0.3 auth) and a Kazakh / Russian / English interface
+- **Status:** Prototype. The frontend and a Node.js API on PostgreSQL (Prisma) exist. Implemented API parts: authentication (FR-07 to FR-09), the teacher's subject, and lesson-plan generation (FR-04, FR-22). Saving and managing plans (FR-10 and later) is not built yet.
 - **Primary artifact:** React web interface for generating lesson plans in three languages
 - **Related documents:** [database-schema.md](./database-schema.md) (ERD and schema), [diagrams/](./diagrams/) (UML), [../development.md](../development.md) (developer guide)
 
@@ -17,7 +17,7 @@ Every requirement, use case and diagram element carries one of two statuses:
 | Status | Meaning |
 | --- | --- |
 | **Implemented** | Works in the current repository (`frontend/app.jsx`, `server/`, `shared/`) or exists as a verified artifact (`prisma/` migration). It can be demonstrated or tested today. |
-| **Planned (v0.3+)** | Designed in this document but not built. That covers everything involving the API gateway, REST endpoints, JWT sessions, persistence through the API, and admin review. |
+| **Planned (v0.3+)** | Designed in this document but not built. That covers saving and managing lesson plans, class scheduling, quizzes, flashcards and admin review. |
 
 ---
 
@@ -62,12 +62,12 @@ Teacher Assistant is a web application where a teacher picks a subject and topic
 | Capability | Requirements | Status |
 | --- | --- | --- |
 | Generate lesson-plan modules from subject + topic | FR-01 to FR-06 | **Implemented** (template content in Kazakh, Russian or English, not curriculum content) |
-| Accounts and sessions | FR-07 to FR-09 | Planned (v0.3+) |
+| Accounts and sessions | FR-07 to FR-09 | **Implemented** (Node.js API, PostgreSQL through Prisma, JWT + rotating refresh tokens) |
 | Save, edit, publish, archive, list and delete lesson plans | FR-10 to FR-13, FR-19 | Planned (v0.3+) |
 | Link plans to curriculum objectives, schedule them for classes | FR-14, FR-15 | Planned (v0.3+) |
 | Quizzes and flashcard decks | FR-16, FR-17, FR-20 | Planned (v0.3+) |
 | Methodologist (ADMIN) review | FR-18 | Planned (v0.3+) |
-| Relational data model for all of the above | DM-01 to DM-06 | **Implemented** (`prisma/`, verified on PostgreSQL engine) |
+| Relational data model for all of the above | DM-01 to DM-06 | **Implemented** (`prisma/`, verified on PostgreSQL engine; v0.3 auth migration applied on PostgreSQL 19) |
 
 ### 3.3 Out of scope
 
@@ -105,15 +105,15 @@ Priority uses MoSCoW: **M**ust, **S**hould, **C**ould, **W**on't (this release).
 | --- | --- | --- | --- | --- |
 | FR-01 | The system shall display a lesson-plan generator containing a subject selector, a topic field, a submit control, a status region and a generated-module area. | M | **Implemented** | After sign-in, the planner page shows all five elements plus a grade selector (grades 1–11), with the submit control below the fields. Each form control has a visible associated `<label>`. The subject list offers five default subjects plus "Other", which reveals a free-text field. |
 | FR-02 | The system shall reject a blank or whitespace-only topic before any network request is sent. | M | **Implemented** | Submitting `""` or `"   "` sends 0 requests, a field-level error appears under the topic field, the status region shows "Enter a topic before generating a lesson plan." (in the selected language), and focus returns to the topic field. |
-| FR-03 | The system shall limit the topic to at most 80 characters. | M | **Implemented** | The topic input has `maxLength=80`, so typing an 81st character has no effect. The interim generate endpoint rejects a longer topic with `400`; the planned save API does the same (see FR-10). DB: `lesson_plans.topic VARCHAR(80)`. |
+| FR-03 | The system shall limit the topic to at most 80 characters. | M | **Implemented** | The topic input has `maxLength=80`, so typing an 81st character has no effect. The generate endpoint rejects a longer topic with `400`; the planned save API does the same (see FR-10). DB: `lesson_plans.topic VARCHAR(80)`. |
 | FR-04 | The system shall generate up to six lesson-plan modules for a valid topic, each showing title, subject, target grade, learning objectives, duration and key activities. | M | **Implemented** | `POST /api/lesson-plans/generate` returns 6 modules (warm-up, new material, guided practice, group work, assessment, reflection; 45 minutes in total), and each card shows all six fields. Content is filled from fixed templates in `shared/lessonTemplates.js`, not from an AI model. |
 | FR-05 | The system shall announce loading and successful generation through a polite live region. | M | **Implemented** | During the request the region reads "Building your lesson plan...". After success it reads "Lesson plan for \"<topic>\" is ready (Grade N, 6 stages)." (shown here in English; the text follows the selected language). The region has `role="status"` and `aria-live="polite"`. |
 | FR-06 | The system shall clear previously generated modules and announce an error when generation fails. | M | **Implemented** | With the API unreachable or a non-2xx response, 0 cards remain and the region reads "Unable to generate the lesson plan. …" in the selected language. |
 | FR-21 | The system shall let the user switch the interface between Kazakh, Russian and English at any time. | S | **Implemented** | The header shows Қазақ тілі, Русский язык and English buttons; the active one has `aria-pressed="true"`, a filled style and an underline. Choosing one immediately translates all labels, options, field errors, status messages and the page title, sets `<html lang>`, and is kept in `localStorage` after reload. Without a saved choice, a supported browser language is used, otherwise Kazakh. |
 | FR-22 | The system shall generate the lesson plan in the selected interface language. | S | **Implemented** | The generate request includes `language` (`kk`, `ru` or `en`); every module's title, objectives, activities, subject name, grade label and duration are in that language, while the teacher's topic and custom subject stay as typed. Switching the language while a plan is shown rebuilds it in the new language. |
-| FR-07 | The system shall register a new account from a unique email, first name, last name and a password of at least 8 characters, assigning role `TEACHER`. | M | Planned (v0.3+) | `POST /api/auth/register` returns `201`. A duplicate email returns `409`. The stored `password_hash` is bcrypt (cost ≥ 12), and no plain password is stored. |
-| FR-08 | The system shall authenticate an active user by email and password and issue a 15-minute access token and a 7-day refresh token. | M | Planned (v0.3+) | `POST /api/auth/login` returns `200` with both tokens. Wrong credentials return `401`. A user with `is_active = false` gets `403`. After 5 failures in 15 minutes the account is locked and `423` is returned (NFR-S5). |
-| FR-09 | The system shall end a session on logout and require re-authentication when the refresh token has expired or been revoked. | M | Planned (v0.3+) | `POST /api/auth/logout` returns `204` and revokes the refresh token. `POST /api/auth/refresh` with a revoked or 7-day-old token returns `401`, and the UI shows the login form. |
+| FR-07 | The system shall register a new account from a unique email, first name, last name and a password of at least 8 characters, assigning role `TEACHER`. | M | **Implemented** | `POST /api/auth/register` returns `201`. A duplicate email returns `409`. The stored `password_hash` is bcrypt (cost ≥ 12), and no plain password is stored. Passwords longer than 72 bytes (bcrypt's input limit) are rejected with `400`. |
+| FR-08 | The system shall authenticate an active user by email and password and issue a 15-minute access token and a 7-day refresh token. | M | **Implemented** | `POST /api/auth/login` returns `200` with both tokens: the access token in the JSON body and the refresh token in an HttpOnly, `SameSite=Strict` cookie scoped to `/api/auth` (so page scripts cannot read it). Wrong credentials return `401`. A user with `is_active = false` gets `403`. After 5 failures in 15 minutes the account is locked and `423` is returned (NFR-S5). |
+| FR-09 | The system shall end a session on logout and require re-authentication when the refresh token has expired or been revoked. | M | **Implemented** | `POST /api/auth/logout` returns `204` and revokes the refresh token. `POST /api/auth/refresh` with a revoked or 7-day-old token returns `401`, and the UI shows the login form. |
 | FR-10 | The system shall save a generated lesson plan for the authenticated teacher as a `DRAFT` with at least one module. | M | Planned (v0.3+) | `POST /api/lesson-plans` returns `201` and a `Location` header. Rows are inserted into `lesson_plans` (status `DRAFT`) and `lesson_plan_modules` (positions 1..N) in one transaction. A blank topic or one longer than 80 characters returns `400`, a CHECK violation returns `422`, and a duplicate module position returns `409`. |
 | FR-11 | The system shall let the author edit the topic, grade, duration and modules of a `DRAFT` lesson plan. | S | Planned (v0.3+) | `PATCH /api/lesson-plans/{id}` returns `200` and updates `updated_at`. Editing a `PUBLISHED` or `ARCHIVED` plan returns `409`, and a non-author gets `403`. |
 | FR-12 | The system shall change a lesson plan's status only along the transitions of the LessonPlan state machine (publish, unpublish, archive, restore). | S | Planned (v0.3+) | `POST /api/lesson-plans/{id}/publish` succeeds only when the plan has ≥ 1 module and ≥ 1 objective. `/unpublish` and `/restore` require 0 `class_lessons`. Any other transition returns `409`. The stored status is always one of `DRAFT`, `PUBLISHED` or `ARCHIVED` (`lesson_plans_status_chk`). |
@@ -128,9 +128,7 @@ Priority uses MoSCoW: **M**ust, **S**hould, **C**ould, **W**on't (this release).
 
 **Won't (this release):** presentation builder, worksheet generator, student accounts and quiz attempts, review comments (see 3.3).
 
-**Interim implementation of FR-07 to FR-09:** a simplified version runs today (see Section 7.2): registration with first name, last name, email and password (8–128 characters); sign-in; sign-out; and a remembered subject per teacher. It uses salted scrypt hashes, a 7-day HttpOnly session cookie and a local SQLite database instead of bcrypt, JWT access/refresh tokens and PostgreSQL, so FR-07 to FR-09 stay **Planned** until the v0.3 API replaces it.
-
-**Schema note:** FR-07 to FR-09 need session data that the v0.2.0 schema does not have: a `refresh_tokens` table plus `failed_login_attempts` and `locked_until` on `users`. This is a planned v0.3 migration. All other FRs map onto existing tables (see Section 8).
+**Schema note:** FR-07 to FR-09 use the v0.3 migration `20261126000000_auth_sessions`: a `refresh_tokens` table plus `failed_login_attempts`, `last_failed_login_at` and `locked_until` on `users` (see [database-schema.md](./database-schema.md), 3.1 and 3.15). All other FRs map onto existing tables (see Section 8).
 
 ### 5.1 Data Model Requirements (Deliverable 2)
 
@@ -154,11 +152,11 @@ Priority uses MoSCoW: **M**ust, **S**hould, **C**ould, **W**on't (this release).
 | NFR-P3 | Performance | The page loads fast on mobile networks. | First Contentful Paint < 2 s on "Fast 4G" with a mid-tier mobile profile, JS bundle < 250 kB raw | Lighthouse CI. The current production build is 227 kB JS, verified with `npm run build`. | Planned (v0.3+) (bundle budget currently met) |
 | NFR-A1 | Availability | The service is available during the school year. | ≥ 99.5 % monthly uptime (≤ 3 h 39 min downtime) | Uptime monitor on `GET /api/health` every 1 min | Planned (v0.3+) |
 | NFR-A2 | Availability | Data can be recovered after failure. | RPO ≤ 24 h (nightly `pg_dump`), RTO ≤ 4 h | Quarterly restore drill into an empty database | Planned (v0.3+) |
-| NFR-S1 | Security | Passwords are stored irreversibly. | bcrypt with cost ≥ 12, no plaintext in DB or logs | Unit test on the hash prefix `$2b$12$`, plus log review | Planned (v0.3+) |
-| NFR-S2 | Security | Sessions are short-lived. | JWT access token TTL = 15 min. Refresh token TTL = 7 days, rotated on every use and revocable | Integration test with a clock skewed past expiry gets `401` | Planned (v0.3+) |
+| NFR-S1 | Security | Passwords are stored irreversibly. | bcrypt with cost ≥ 12, no plaintext in DB or logs | Unit test on the hash prefix `$2b$12$`, plus log review | **Implemented** (`bcryptjs`, cost 12) |
+| NFR-S2 | Security | Sessions are short-lived. | JWT access token TTL = 15 min. Refresh token TTL = 7 days, rotated on every use and revocable | Integration test with a clock skewed past expiry gets `401` | **Implemented** (HS256 JWT; refresh tokens stored as SHA-256 hashes, rotated on use; reusing a rotated token revokes all of the user's tokens) |
 | NFR-S3 | Security | Traffic is encrypted. | HTTPS only, TLS 1.2+, HSTS max-age ≥ 6 months | SSL Labs grade ≥ A | Planned (v0.3+) |
 | NFR-S4 | Security | Common web vulnerabilities are mitigated. | 0 high or critical findings for OWASP Top 10 (2021) categories. Parameterised queries only (Prisma). Authorisation checked on every `/api/*` route. | OWASP ZAP baseline scan in CI, plus `npm audit --audit-level=high` | Planned (v0.3+) |
-| NFR-S5 | Security | Brute-force login is throttled. | 5 failed logins per account in 15 min → locked for 15 min (`423`). ≤ 100 requests/min per IP on `/api/auth/*`. | Integration test: 6th attempt returns `423` | Planned (v0.3+) |
+| NFR-S5 | Security | Brute-force login is throttled. | 5 failed logins per account in 15 min → locked for 15 min (`423`). ≤ 100 requests/min per IP on `/api/auth/*`. | Integration test: 6th attempt returns `423` | **Implemented** (lockout in `users`; rate limit kept in API memory per process) |
 | NFR-AC1 | Accessibility | The UI uses accessible semantics. | Native controls with associated labels, a visible `:focus-visible` style, a `role="status"` live region, and status never conveyed by colour alone | Manual keyboard pass (development.md §5) | **Implemented** |
 | NFR-AC2 | Accessibility | The UI conforms to WCAG 2.1 AA. | 0 serious or critical axe-core violations, contrast ≥ 4.5:1 for body text | axe DevTools / `@axe-core/cli` on every page | Planned (v0.3+) |
 | NFR-U1 | Usability / responsive | Layout works from phone to desktop. | No horizontal scroll from 320 px to 1920 px width. Form fields stack below 560 px. | Manual check at 320, 375, 1280 and 1920 px | **Implemented** (generator page) |
@@ -183,38 +181,35 @@ The planned end-to-end workflow (generate → save → publish → schedule) is 
 
 ### 7.1 Planned REST API surface (v0.3+)
 
-These endpoints are used consistently by the activity diagram, the sequence diagrams and this SRS. **None of them exist yet.**
+These endpoints are used consistently by the activity diagram, the sequence diagrams and this SRS. The last column shows which ones exist today.
 
-| Method and path | FR | Success |
-| --- | --- | --- |
-| `POST /api/auth/register` | FR-07 | `201` |
-| `POST /api/auth/login` | FR-08 | `200` |
-| `POST /api/auth/refresh` | FR-09 | `200` |
-| `POST /api/auth/logout` | FR-09 | `204` |
-| `POST /api/lesson-plans/generate` | FR-04 (server-side version) | `200` |
-| `POST /api/lesson-plans` | FR-10 | `201` |
-| `GET /api/lesson-plans` | FR-13 | `200` |
-| `PATCH /api/lesson-plans/{id}` | FR-11 | `200` |
-| `POST /api/lesson-plans/{id}/publish`, `/unpublish`, `/archive`, `/restore` | FR-12, FR-18 | `200` |
-| `DELETE /api/lesson-plans/{id}` | FR-19 | `204` |
-| `PUT /api/lesson-plans/{id}/objectives` | FR-14 | `200` |
-| `POST /api/class-groups/{id}/lessons` | FR-15 | `201` |
-| `POST /api/quizzes` | FR-16 | `201` |
-| `POST /api/flashcard-decks` | FR-17 | `201` |
-| `GET /api/admin/lesson-plans` | FR-18 | `200` |
+| Method and path | FR | Success | Status |
+| --- | --- | --- | --- |
+| `POST /api/auth/register` | FR-07 | `201` | **Implemented** |
+| `POST /api/auth/login` | FR-08 | `200` | **Implemented** |
+| `POST /api/auth/refresh` | FR-09 | `200` | **Implemented** |
+| `POST /api/auth/logout` | FR-09 | `204` | **Implemented** |
+| `POST /api/lesson-plans/generate` | FR-04 (server-side version), FR-22 | `200` | **Implemented** (template content) |
+| `POST /api/lesson-plans` | FR-10 | `201` | Planned |
+| `GET /api/lesson-plans` | FR-13 | `200` | Planned |
+| `PATCH /api/lesson-plans/{id}` | FR-11 | `200` | Planned |
+| `POST /api/lesson-plans/{id}/publish`, `/unpublish`, `/archive`, `/restore` | FR-12, FR-18 | `200` | Planned |
+| `DELETE /api/lesson-plans/{id}` | FR-19 | `204` | Planned |
+| `PUT /api/lesson-plans/{id}/objectives` | FR-14 | `200` | Planned |
+| `POST /api/class-groups/{id}/lessons` | FR-15 | `201` | Planned |
+| `POST /api/quizzes` | FR-16 | `201` | Planned |
+| `POST /api/flashcard-decks` | FR-17 | `201` | Planned |
+| `GET /api/admin/lesson-plans` | FR-18 | `200` | Planned |
 
-### 7.2 Interim prototype API (implemented)
+### 7.2 Supporting endpoints (implemented)
 
-A small Node.js server (`server/index.js`) runs during development behind the Vite `/api` proxy. It is a stand-in until the v0.3 API above exists and is **not** the planned design: it uses SQLite (`server/database.js`), scrypt password hashes and an HttpOnly session cookie instead of PostgreSQL, bcrypt and JWT. Errors return `{ error, fieldErrors }` with codes that the frontend translates.
+Not part of the planned surface above, but needed by the current UI. All require `Authorization: Bearer <access token>`. Errors from every endpoint return `{ error, fieldErrors }` with codes that the frontend translates.
 
 | Method and path | Purpose | Success |
 | --- | --- | --- |
-| `POST /api/register` | Interim FR-07 (no role, no subject) | `201` |
-| `POST /api/login` | Interim FR-08 (7-day session cookie) | `200` |
-| `POST /api/logout` | Interim FR-09 | `200` |
-| `GET /api/me` | Current teacher | `200` |
-| `PUT /api/me/subject` | Remember the subject taught | `200` |
-| `POST /api/lesson-plans/generate` | FR-04, FR-22 (server-side generation; nothing is saved except the subject) | `200` |
+| `GET /api/me` | Current teacher, including the subject from the latest `teacher_subjects` link | `200` |
+| `GET /api/subjects` | Curriculum subjects from the `subjects` table (custom `CUSTOM_*` rows excluded) | `200` |
+| `PUT /api/me/subject` | Pick a subject `{ id }` or type one `{ name }`; links it through `teacher_subjects` | `200` |
 
 ---
 
@@ -230,9 +225,9 @@ UC IDs refer to [diagrams/behavioral/use-case.md](./diagrams/behavioral/use-case
 | FR-04 | UC-01 | UC, ACT, CRC, CD | none (in memory). Saved later in `lesson_plan_modules`. | Implemented |
 | FR-05 | UC-01 | UC, ACT, SEQ-1 | none | Implemented |
 | FR-06 | UC-03 | UC, ACT | none | Implemented |
-| FR-07 | UC-04 | UC, SM-S, CRC, CD | `users` | Planned (v0.3+) |
-| FR-08 | UC-05 | UC, SM-S, SEQ-2, CRC, CD | `users` (+ planned `refresh_tokens`) | Planned (v0.3+) |
-| FR-09 | UC-06 | UC, SM-S, SEQ-1 (401 branch) | `users` (+ planned `refresh_tokens`) | Planned (v0.3+) |
+| FR-07 | UC-04 | UC, SM-S, CRC, CD | `users` | Implemented |
+| FR-08 | UC-05 | UC, SM-S, SEQ-2, CRC, CD | `users`, `refresh_tokens` | Implemented |
+| FR-09 | UC-06 | UC, SM-S, SEQ-1 (401 branch) | `users`, `refresh_tokens` | Implemented |
 | FR-10 | UC-07 | UC, ACT, SM-LP, SEQ-1, CRC, CD | `lesson_plans`, `lesson_plan_modules`, `lesson_plan_objectives` | Planned (v0.3+) |
 | FR-11 | UC-08 | UC, SM-LP, CD | `lesson_plans`, `lesson_plan_modules` | Planned (v0.3+) |
 | FR-12 | UC-09 | UC, SM-LP, CD | `lesson_plans`, `lesson_plan_objectives`, `class_lessons` | Planned (v0.3+) |
@@ -253,11 +248,11 @@ UC IDs refer to [diagrams/behavioral/use-case.md](./diagrams/behavioral/use-case
 
 - The frontend tracks the language, signed-in teacher, subject, grade, topic, field errors, generated modules, loading state and status feedback in React state. Status messages are stored as keys so they re-render in a newly chosen language.
 - Module text comes from fixed templates in three languages (`shared/lessonTemplates.js`). It is a structured starting point, not verified curriculum content or AI-generated lesson plans.
-- Generated plans are in memory and reset on page refresh. Only interim accounts and their subject are stored.
-- Interim accounts live in a local SQLite file (`data/teacher-assistant.db`, not in Git). Its tables follow the first ERD draft (`tblUser`, `tblDate`, `tblClass`) plus `Email`, `PasswordHash` and a `tblSession` table. `tblClass` is created but unused. This store will be replaced by the PostgreSQL schema below; existing SQLite accounts are not migrated.
-- The frontend's default subject list (Science, Mathematics, Language Arts, Social Studies, Art) is hard-coded in `shared/validation.js` and differs from the `subjects` seed data. Custom subjects are stored as free text, while the planned schema stores subjects in a `subjects` table linked through `teacher_subjects`. Aligning them is part of connecting the v0.3 API.
-- There is no password reset, email verification, account deletion or login throttling yet (see NFR-S5).
-- The persistent data model is specified in [database-schema.md](./database-schema.md) and implemented in `prisma/schema.prisma` for PostgreSQL 16. It has 14 tables covering users, subjects, class groups, curriculum objectives, lesson plans and their modules, scheduled class lessons, quizzes and flashcard decks. `prisma/seed.sql` loads fictional sample data. The app is not connected to this database yet.
+- Generated plans are in memory and reset on page refresh. Accounts, sessions and each teacher's subjects are stored in PostgreSQL.
+- The API (`server/`) uses Prisma with the schema in `prisma/schema.prisma`. It reads and writes `users`, `refresh_tokens`, `subjects` and `teacher_subjects`; the other tables are not used yet.
+- The subject list comes from the `subjects` table (the 10 seed subjects), with names translated by `subjects.code` in `shared/lessonTemplates.js`. A subject typed under "Other" is stored as a new `subjects` row with a `CUSTOM_` code and linked through `teacher_subjects`.
+- There is no password reset, email verification or account deletion yet. The auth rate limit is kept in memory per API process, and behind the Vite proxy every browser shares the proxy's address.
+- The persistent data model is specified in [database-schema.md](./database-schema.md) and implemented in `prisma/schema.prisma` for PostgreSQL 16. It has 15 tables (14 from v0.2.0 plus `refresh_tokens` from v0.3) covering users, sessions, subjects, class groups, curriculum objectives, lesson plans and their modules, scheduled class lessons, quizzes and flashcard decks. `prisma/seed.sql` loads fictional sample data; its password hashes are placeholders, so seed users cannot sign in.
 
 ---
 
@@ -271,7 +266,8 @@ Prototype (Implemented scope):
 - [ ] A chosen subject (default or custom) is still selected after reload or a new sign-in.
 - [ ] Grades 1 to 11 are offered, and a missing grade or subject is rejected with a field-level error.
 - [ ] Switching between Қазақ тілі, Русский язык and English translates the interface and the generated plan immediately and is kept after reload.
-- [ ] A valid subject, grade and topic generate six modules while the interim API is running.
+- [ ] A valid subject, grade and topic generate six modules while the API is running.
+- [ ] Sign-in, refresh, logout, lockout (`423` on the 6th attempt) and `403` for inactive users behave as in FR-07 to FR-09 and NFR-S5.
 - [ ] Generated modules show all required fields.
 - [ ] Request failure clears modules and displays an accessible error status.
 - [ ] The page has no horizontal overflow at 1280px and 375px viewport widths.
