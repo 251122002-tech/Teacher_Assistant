@@ -14,7 +14,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **User** | Know identity (email, first/last name), role (`TEACHER` / `ADMIN`) and active flag. Answer "is this user an admin?". Deactivate itself instead of being deleted. | LessonPlan, ClassGroup, Quiz, FlashcardDeck, Subject (via TeacherSubject) |
 
-*Single responsibility:* represent a person's identity and role. *Split:* password checking and token handling moved to **AuthService** / **TokenService**, so a change in login policy does not touch the User entity. Status: data Implemented (`users`), methods Planned (v0.3+).
+*Single responsibility:* represent a person's identity and role. *Split:* password checking and token handling moved to **AuthService** / **TokenService**, so a change in login policy does not touch the User entity. Status: data Implemented (`users`, plus the v0.3 login-throttling columns).
 
 ### Subject
 
@@ -88,7 +88,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **ApiClient** | Send HTTP requests to `/api/*`. Attach `Authorization: Bearer <access token>`. On `401`, call `POST /api/auth/refresh` once and retry. Convert non-2xx responses into typed errors (status + message) for the UI. | TokenStore (browser), React components, API Gateway |
 
-*Single responsibility:* HTTP transport between the browser and the API. *Split:* today `loadDashboardData` in `app.jsx` fetches, maps and updates UI state in one function. In v0.3 transport moves to ApiClient and mapping moves to LessonPlanGenerator, and the component only renders and announces status. Status: Planned (v0.3+). The `fetch` call to JSONPlaceholder is Implemented inline.
+*Single responsibility:* HTTP transport between the browser and the API. *Split:* transport lives in `frontend/apiClient.js`, module building in the server-side generator, and the component only renders and announces status. Status: **Implemented** (`frontend/apiClient.js`: access token in memory, one shared refresh on `401`, then a single retry).
 
 ### AuthMiddleware (API gateway)
 
@@ -96,7 +96,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **AuthMiddleware** | For every protected route: read the Bearer token, ask TokenService to verify it, attach `AuthContext` (userId, role) to the request, or reply `401`. Reply `403` when the route needs `ADMIN`. | TokenService, AuthContext |
 
-*Single responsibility:* request-level access control. Status: Planned (v0.3+).
+*Single responsibility:* request-level access control. Status: **Implemented** (`requireUser` in `server/index.js`). There is no `ADMIN`-only route yet.
 
 ### AuthService
 
@@ -104,7 +104,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **AuthService** | Register users (unique email, bcrypt cost ≥ 12). Verify credentials on login. Count failed attempts and lock after 5 within 15 min. Refuse inactive users. Log out by revoking the refresh token. | UserRepository, PasswordHasher, TokenService |
 
-*Single responsibility:* credential and account-access policy. *Split:* token creation and verification moved to **TokenService**, because JWT format, keys and TTLs change for different reasons (cryptography and infrastructure) than login rules (product policy). Status: Planned (v0.3+).
+*Single responsibility:* credential and account-access policy. *Split:* token creation and verification moved to **TokenService**, because JWT format, keys and TTLs change for different reasons (cryptography and infrastructure) than login rules (product policy). Status: **Implemented** (`server/authService.js`, bcrypt cost 12 via `bcryptjs`).
 
 ### TokenService
 
@@ -112,7 +112,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **TokenService** | Issue a 15-minute access JWT and a 7-day refresh token. Verify signature and expiry. Rotate and revoke refresh tokens. | RefreshTokenStore (planned `refresh_tokens` table) |
 
-*Single responsibility:* token lifecycle. Status: Planned (v0.3+).
+*Single responsibility:* token lifecycle. Status: **Implemented** (`server/tokenService.js`: HS256 JWT; refresh tokens stored as SHA-256 hashes in `refresh_tokens`, rotated on use, reuse revokes the user's tokens).
 
 ### LessonPlanService
 
@@ -128,7 +128,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **LessonPlanGenerator** | Turn (subject, topic) into at most 6 draft modules with title, target grade, objectives text, duration and activity. Enforce the 6-module limit and timing defaults. | ContentServiceClient, LessonPlanModule |
 
-*Single responsibility:* the mapping from raw content to lesson-plan modules. *Split:* calling the external service moved to **ContentServiceClient**, so switching from JSONPlaceholder to a real AI provider does not change the mapping rules. Status: logic Implemented inline in `app.jsx` (`sourcePosts.slice(0, 6).map(...)`). The class is Planned (v0.3+).
+*Single responsibility:* the mapping from raw content to lesson-plan modules. *Split:* calling the external service moved to **ContentServiceClient**, so switching from JSONPlaceholder to a real AI provider does not change the mapping rules. Status: Implemented as `buildLessonModules` in `shared/lessonTemplates.js`, called by `POST /api/lesson-plans/generate`. It fills six fixed stage templates in Kazakh, Russian or English instead of mapping external content.
 
 ### ContentServiceClient
 
@@ -136,7 +136,7 @@ CRC (Class, Responsibilities, Collaborators) cards list what each class knows an
 | --- | --- | --- |
 | **ContentServiceClient** | Call the external content / AI service with a 10 s timeout. Return raw items, or throw `ServiceUnavailableError`. | External content / AI service |
 
-*Single responsibility:* the vendor protocol of the external service. Status: Planned (v0.3+). The direct `fetch` to JSONPlaceholder is Implemented.
+*Single responsibility:* the vendor protocol of the external service. Status: Planned (v0.3+). The JSONPlaceholder call was removed; plans now come from local templates, so there is no external content service yet.
 
 ### LessonPlanRepository
 

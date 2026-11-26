@@ -35,47 +35,52 @@ Student: Shattyk Rahmetolla, Assel Sergazy
 
 ### Frontend development
 
-The current lesson-plan generator frontend uses React and Vite. From the project root, install dependencies and start the development server:
+The current app has teacher accounts (sign up, sign in, saved subject), a lesson-plan generator, and a Kazakh / Russian / English interface that also sets the language of the generated plan. The frontend uses React and Vite; the API is a Node.js server (22.9+) on PostgreSQL through Prisma, with JWT access tokens and rotating refresh tokens. Set up the database first (see [Database setup](#database-setup)), then from the project root:
 
 ```sh
 npm install
-npm run dev
+npm run db:generate
+npm run dev:api   # terminal 1: API (reads .env)
+npm run dev       # terminal 2: frontend at http://localhost:5173
 ```
 
-Create a production build with `npm run build`. See [development.md](./development.md) for the frontend structure and verification steps.
+Create a production build with `npm run build`. See [development.md](./development.md) for the project structure and verification steps.
 
 ### Database setup
 
 The relational design (Deliverable 2, release `v0.2.0`) targets **PostgreSQL 16** through the **Prisma** ORM. The ERD, entity tables, cardinality rules and design justification are in [docs/database-schema.md](./docs/database-schema.md).
 
-1. Install and start PostgreSQL 16, then create a database. For example, with Docker:
+1. Install and start PostgreSQL 16 or newer, then create a database. On macOS, [Postgres.app](https://postgresapp.com/) is the simplest option (`createdb teacher_assistant`). With Docker:
 
    ```sh
    docker run --name teacher-assistant-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=teacher_assistant -p 5432:5432 -d postgres:16
    ```
 
-2. Copy `.env.example` to `.env` and adjust `DATABASE_URL` if needed.
+2. Copy `.env.example` to `.env`, adjust `DATABASE_URL`, and set `JWT_SECRET` to at least 32 random characters.
 3. Install dependencies and apply the schema:
 
    ```sh
    npm install
    npm run db:validate   # check prisma/schema.prisma
-   npm run db:migrate    # create tables, indexes, foreign keys and CHECK constraints
+   npm run db:migrate    # create tables, indexes, foreign keys and CHECK constraints (v0.2 init + v0.3 auth)
    npm run db:seed       # load fictional sample data from prisma/seed.sql
    ```
 
-The frontend is not connected to the database yet. Lesson plans generated in the browser are still kept in memory only.
+The API stores accounts, refresh tokens and each teacher's subjects in this database. Generated lesson plans are not saved yet (kept in browser memory). The seed users cannot sign in because their password hashes are placeholders; create a new account instead.
 
 ### Repository map
 
 | Path | Purpose |
 | --- | --- |
-| `frontend/` | React + Vite lesson-plan generator (`app.jsx`, `index.html`, `styles.css`) |
+| `frontend/` | React + Vite lesson-plan generator (`app.jsx`, `apiClient.js`, `index.html`, `styles.css`, `translations.js` for Kazakh/Russian/English text) |
+| `server/` | Node.js API: routes and auth middleware (`index.js`), `authService.js`, `tokenService.js`, `subjectService.js`, `rateLimiter.js` |
+| `shared/` | Validation rules and lesson-plan templates used by both the frontend and the API |
+| `vite.config.js` | Vite root and `/api` proxy to the local API server |
 | `docs/erd.pdf`, `docs/erd.png`, `docs/erd.svg` | Crow's Foot ERD |
 | `docs/database-schema.md` | Entity tables, relationships, 3NF and indexing justification |
 | `docs/legacy/erd-v0.1.jpg` | First ERD draft, kept for the normalization write-up |
 | `prisma/schema.prisma` | Executable Prisma schema |
-| `prisma/migrations/` | SQL migration including CHECK constraints |
+| `prisma/migrations/` | SQL migrations including CHECK constraints (v0.2 init, v0.3 auth sessions) |
 | `prisma/seed.sql` | Fictional sample data |
 | `docs/specifications.md` | Software requirements specification: problem/solution space, personas, FRs, NFRs, traceability |
 | `docs/diagrams/behavioral/` | Use case (`use-case.md`), activity (`activity.md`) and state machine (`state-machine.md`) diagrams |

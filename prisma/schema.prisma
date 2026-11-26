@@ -28,6 +28,12 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  // v0.3 login throttling (NFR-S5): failures counted inside a 15-minute window.
+  failedLoginAttempts Int       @default(0) @map("failed_login_attempts") @db.SmallInt
+  lastFailedLoginAt   DateTime? @map("last_failed_login_at") @db.Timestamptz(6)
+  lockedUntil         DateTime? @map("locked_until") @db.Timestamptz(6)
+
+  refreshTokens   RefreshToken[]
   teacherSubjects TeacherSubject[]
   classGroups     ClassGroup[]
   lessonPlans     LessonPlan[]
@@ -35,6 +41,23 @@ model User {
   flashcardDecks  FlashcardDeck[]
 
   @@map("users")
+}
+
+/// v0.3: one row per issued refresh token (NFR-S2). Only the SHA-256 hash is stored.
+/// Rotation revokes the used row and points it at its replacement.
+model RefreshToken {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  tokenHash    String    @unique @map("token_hash") @db.Char(64)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  replacedById String?   @map("replaced_by_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId], type: BTree)
+  @@map("refresh_tokens")
 }
 
 model Subject {
