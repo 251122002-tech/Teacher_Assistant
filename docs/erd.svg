@@ -1,0 +1,523 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1510" height="1210" viewBox="0 0 1510 1210" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<style>
+  .box{fill:#fff;stroke:#1f3a5f;stroke-width:1.5}
+  .head{fill:#1f3a5f}.head-j{fill:#4b6584}
+  .title{fill:#fff;font-size:14px;font-weight:600}
+  .col{font-size:12px;fill:#1b1b1b}.type{font-size:11px;fill:#555;font-family:Consolas, monospace}
+  .badge-pk{font-size:10px;font-weight:700;fill:#9a6700}.badge-fk{font-size:10px;font-weight:700;fill:#1f6feb}
+  .badge-uk{font-size:10px;font-weight:700;fill:#6e40c9}.badge-ck{font-size:10px;font-weight:700;fill:#57606a}
+  .pkrow{fill:#fff8e1}
+  .rel{fill:none;stroke:#333;stroke-width:1.4}
+  .mark{fill:none;stroke:#333;stroke-width:1.4}.ring{fill:#fff;stroke:#333;stroke-width:1.4}
+  .label{font-size:11px;fill:#333;font-style:italic}.label-bg{fill:#fff}
+  .card{font-size:10px;fill:#b42318;font-weight:600}
+  .legend{fill:#f6f8fa;stroke:#c9d1d9}.lt{font-size:12px;fill:#1b1b1b}.lh{font-size:15px;font-weight:700;fill:#1f3a5f}
+</style>
+<rect width="1510" height="1210" fill="#ffffff"/>
+<polyline class="rel" points="340,118 420,118"/>
+<line class="mark" x1="349" y1="126" x2="349" y2="110"/>
+<line class="mark" x1="355" y1="126" x2="355" y2="110"/>
+<text class="card" x="370" y="107" text-anchor="middle">1</text>
+<line class="mark" x1="404" y1="118" x2="420" y2="127"/>
+<line class="mark" x1="404" y1="118" x2="420" y2="118"/>
+<line class="mark" x1="404" y1="118" x2="420" y2="109"/>
+<circle class="ring" cx="397" cy="118" r="5"/>
+<text class="card" x="390" y="135" text-anchor="middle">0..N</text>
+<polyline class="rel" points="790,118 710,118"/>
+<line class="mark" x1="781" y1="110" x2="781" y2="126"/>
+<line class="mark" x1="775" y1="110" x2="775" y2="126"/>
+<text class="card" x="760" y="135" text-anchor="middle">1</text>
+<line class="mark" x1="726" y1="118" x2="710" y2="109"/>
+<line class="mark" x1="726" y1="118" x2="710" y2="118"/>
+<line class="mark" x1="726" y1="118" x2="710" y2="127"/>
+<circle class="ring" cx="733" cy="118" r="5"/>
+<text class="card" x="740" y="107" text-anchor="middle">0..N</text>
+<polyline class="rel" points="1080,118 1160,118"/>
+<line class="mark" x1="1089" y1="126" x2="1089" y2="110"/>
+<line class="mark" x1="1095" y1="126" x2="1095" y2="110"/>
+<text class="card" x="1110" y="107" text-anchor="middle">1</text>
+<line class="mark" x1="1144" y1="118" x2="1160" y2="127"/>
+<line class="mark" x1="1144" y1="118" x2="1160" y2="118"/>
+<line class="mark" x1="1144" y1="118" x2="1160" y2="109"/>
+<circle class="ring" cx="1137" cy="118" r="5"/>
+<text class="card" x="1130" y="135" text-anchor="middle">0..N</text>
+<polyline class="rel" points="990,286 990,380"/>
+<line class="mark" x1="982" y1="295" x2="998" y2="295"/>
+<line class="mark" x1="982" y1="301" x2="998" y2="301"/>
+<text class="card" x="976" y="319" text-anchor="middle">1</text>
+<line class="mark" x1="990" y1="364" x2="981" y2="380"/>
+<line class="mark" x1="990" y1="364" x2="990" y2="380"/>
+<line class="mark" x1="990" y1="364" x2="999" y2="380"/>
+<circle class="ring" cx="990" cy="357" r="5"/>
+<text class="card" x="1004" y="353" text-anchor="middle">0..N</text>
+<polyline class="rel" points="280,166 280,340 850,340 850,380"/>
+<line class="mark" x1="272" y1="175" x2="288" y2="175"/>
+<line class="mark" x1="272" y1="181" x2="288" y2="181"/>
+<text class="card" x="266" y="199" text-anchor="middle">1</text>
+<line class="mark" x1="850" y1="364" x2="841" y2="380"/>
+<line class="mark" x1="850" y1="364" x2="850" y2="380"/>
+<line class="mark" x1="850" y1="364" x2="859" y2="380"/>
+<circle class="ring" cx="850" cy="357" r="5"/>
+<text class="card" x="864" y="353" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="531" y="332" width="68" height="16"/><text class="label" x="565" y="344" text-anchor="middle">classifies</text>
+<polyline class="rel" points="130,166 130,380"/>
+<line class="mark" x1="122" y1="175" x2="138" y2="175"/>
+<line class="mark" x1="122" y1="181" x2="138" y2="181"/>
+<text class="card" x="116" y="199" text-anchor="middle">1</text>
+<line class="mark" x1="130" y1="364" x2="121" y2="380"/>
+<line class="mark" x1="130" y1="364" x2="130" y2="380"/>
+<line class="mark" x1="130" y1="364" x2="139" y2="380"/>
+<circle class="ring" cx="130" cy="357" r="5"/>
+<text class="card" x="144" y="353" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="136" y="264" width="50" height="16"/><text class="label" x="140" y="276">defines</text>
+<polyline class="rel" points="340,418 420,418"/>
+<line class="mark" x1="349" y1="426" x2="349" y2="410"/>
+<line class="mark" x1="355" y1="426" x2="355" y2="410"/>
+<text class="card" x="370" y="407" text-anchor="middle">1</text>
+<line class="mark" x1="404" y1="418" x2="420" y2="427"/>
+<line class="mark" x1="404" y1="418" x2="420" y2="418"/>
+<line class="mark" x1="404" y1="418" x2="420" y2="409"/>
+<circle class="ring" cx="397" cy="418" r="5"/>
+<text class="card" x="390" y="435" text-anchor="middle">0..N</text>
+<polyline class="rel" points="790,418 710,418"/>
+<line class="mark" x1="781" y1="410" x2="781" y2="426"/>
+<line class="mark" x1="775" y1="410" x2="775" y2="426"/>
+<text class="card" x="760" y="435" text-anchor="middle">1</text>
+<line class="mark" x1="726" y1="418" x2="710" y2="409"/>
+<line class="mark" x1="726" y1="418" x2="710" y2="418"/>
+<line class="mark" x1="726" y1="418" x2="710" y2="427"/>
+<circle class="ring" cx="733" cy="418" r="5"/>
+<text class="card" x="740" y="407" text-anchor="middle">0..N</text>
+<polyline class="rel" points="1305,246 1305,380"/>
+<line class="mark" x1="1297" y1="255" x2="1313" y2="255"/>
+<line class="mark" x1="1297" y1="261" x2="1313" y2="261"/>
+<text class="card" x="1291" y="279" text-anchor="middle">1</text>
+<line class="mark" x1="1305" y1="364" x2="1296" y2="380"/>
+<line class="mark" x1="1305" y1="364" x2="1305" y2="380"/>
+<line class="mark" x1="1305" y1="364" x2="1314" y2="380"/>
+<circle class="ring" cx="1305" cy="357" r="5"/>
+<text class="card" x="1319" y="353" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="1311" y="304" width="38" height="16"/><text class="label" x="1315" y="316">hosts</text>
+<polyline class="rel" points="1080,458 1160,458"/>
+<line class="mark" x1="1089" y1="466" x2="1089" y2="450"/>
+<line class="mark" x1="1095" y1="466" x2="1095" y2="450"/>
+<text class="card" x="1110" y="447" text-anchor="middle">1</text>
+<line class="mark" x1="1144" y1="458" x2="1160" y2="467"/>
+<line class="mark" x1="1144" y1="458" x2="1160" y2="458"/>
+<line class="mark" x1="1144" y1="458" x2="1160" y2="449"/>
+<circle class="ring" cx="1137" cy="458" r="5"/>
+<text class="card" x="1130" y="475" text-anchor="middle">0..N</text>
+<polyline class="rel" points="935,596 935,690"/>
+<line class="mark" x1="927" y1="605" x2="943" y2="605"/>
+<line class="mark" x1="927" y1="611" x2="943" y2="611"/>
+<text class="card" x="921" y="629" text-anchor="middle">1</text>
+<line class="mark" x1="935" y1="674" x2="926" y2="690"/>
+<line class="mark" x1="935" y1="674" x2="935" y2="690"/>
+<line class="mark" x1="935" y1="674" x2="944" y2="690"/>
+<line class="mark" x1="943" y1="670" x2="927" y2="670"/>
+<text class="card" x="949" y="663" text-anchor="middle">1..N</text>
+<polyline class="rel" points="830,596 830,650 565,650 565,690"/>
+<line class="mark" x1="822" y1="605" x2="838" y2="605"/>
+<circle class="ring" cx="830" cy="617" r="5"/>
+<text class="card" x="816" y="629" text-anchor="middle">0..1</text>
+<line class="mark" x1="565" y1="674" x2="556" y2="690"/>
+<line class="mark" x1="565" y1="674" x2="565" y2="690"/>
+<line class="mark" x1="565" y1="674" x2="574" y2="690"/>
+<circle class="ring" cx="565" cy="667" r="5"/>
+<text class="card" x="579" y="663" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="660.5" y="642" width="74" height="16"/><text class="label" x="697.5" y="654" text-anchor="middle">assessed by</text>
+<polyline class="rel" points="1040,596 1040,650 1305,650 1305,690"/>
+<line class="mark" x1="1032" y1="605" x2="1048" y2="605"/>
+<circle class="ring" cx="1040" cy="617" r="5"/>
+<text class="card" x="1026" y="629" text-anchor="middle">0..1</text>
+<line class="mark" x1="1305" y1="674" x2="1296" y2="690"/>
+<line class="mark" x1="1305" y1="674" x2="1305" y2="690"/>
+<line class="mark" x1="1305" y1="674" x2="1314" y2="690"/>
+<circle class="ring" cx="1305" cy="667" r="5"/>
+<text class="card" x="1319" y="663" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="1135.5" y="642" width="74" height="16"/><text class="label" x="1172.5" y="654" text-anchor="middle">reviewed by</text>
+<polyline class="rel" points="840,70 840,30 20,30 20,740 420,740"/>
+<line class="mark" x1="848" y1="61" x2="832" y2="61"/>
+<line class="mark" x1="848" y1="55" x2="832" y2="55"/>
+<text class="card" x="854" y="43" text-anchor="middle">1</text>
+<line class="mark" x1="404" y1="740" x2="420" y2="749"/>
+<line class="mark" x1="404" y1="740" x2="420" y2="740"/>
+<line class="mark" x1="404" y1="740" x2="420" y2="731"/>
+<circle class="ring" cx="397" cy="740" r="5"/>
+<text class="card" x="390" y="757" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="405" y="22" width="50" height="16"/><text class="label" x="430" y="34" text-anchor="middle">authors</text>
+<polyline class="rel" points="1030,70 1030,30 1480,30 1480,740 1450,740"/>
+<line class="mark" x1="1038" y1="61" x2="1022" y2="61"/>
+<line class="mark" x1="1038" y1="55" x2="1022" y2="55"/>
+<text class="card" x="1044" y="43" text-anchor="middle">1</text>
+<line class="mark" x1="1466" y1="740" x2="1450" y2="731"/>
+<line class="mark" x1="1466" y1="740" x2="1450" y2="740"/>
+<line class="mark" x1="1466" y1="740" x2="1450" y2="749"/>
+<circle class="ring" cx="1473" cy="740" r="5"/>
+<text class="card" x="1480" y="729" text-anchor="middle">0..N</text>
+<rect class="label-bg" x="1230" y="22" width="50" height="16"/><text class="label" x="1255" y="34" text-anchor="middle">authors</text>
+<polyline class="rel" points="565,866 565,950"/>
+<line class="mark" x1="557" y1="875" x2="573" y2="875"/>
+<line class="mark" x1="557" y1="881" x2="573" y2="881"/>
+<text class="card" x="551" y="899" text-anchor="middle">1</text>
+<line class="mark" x1="565" y1="934" x2="556" y2="950"/>
+<line class="mark" x1="565" y1="934" x2="565" y2="950"/>
+<line class="mark" x1="565" y1="934" x2="574" y2="950"/>
+<circle class="ring" cx="565" cy="927" r="5"/>
+<text class="card" x="579" y="923" text-anchor="middle">0..N</text>
+<polyline class="rel" points="420,1018 340,1018"/>
+<line class="mark" x1="411" y1="1010" x2="411" y2="1026"/>
+<line class="mark" x1="405" y1="1010" x2="405" y2="1026"/>
+<text class="card" x="390" y="1035" text-anchor="middle">1</text>
+<line class="mark" x1="356" y1="1018" x2="340" y2="1009"/>
+<line class="mark" x1="356" y1="1018" x2="340" y2="1018"/>
+<line class="mark" x1="356" y1="1018" x2="340" y2="1027"/>
+<line class="mark" x1="360" y1="1026" x2="360" y2="1010"/>
+<text class="card" x="370" y="1007" text-anchor="middle">1..N</text>
+<polyline class="rel" points="1305,846 1305,950"/>
+<line class="mark" x1="1297" y1="855" x2="1313" y2="855"/>
+<line class="mark" x1="1297" y1="861" x2="1313" y2="861"/>
+<text class="card" x="1291" y="879" text-anchor="middle">1</text>
+<line class="mark" x1="1305" y1="934" x2="1296" y2="950"/>
+<line class="mark" x1="1305" y1="934" x2="1305" y2="950"/>
+<line class="mark" x1="1305" y1="934" x2="1314" y2="950"/>
+<circle class="ring" cx="1305" cy="927" r="5"/>
+<text class="card" x="1319" y="923" text-anchor="middle">0..N</text>
+<rect class="box" x="50" y="70" width="290" height="96" rx="4"/>
+<path class="head" d="M50 100 V74 Q50 70 54 70 H336 Q340 70 340 74 V100 Z"/>
+<text class="title" x="195" y="90" text-anchor="middle">subjects</text>
+<rect class="pkrow" x="51" y="100" width="288" height="20"/>
+<text class="badge-pk" x="58" y="114">PK</text>
+<text class="col" x="102" y="114" font-weight="600">id</text>
+<text class="type" x="332" y="114" text-anchor="end">SERIAL</text>
+<text class="badge-uk" x="58" y="134">UK</text>
+<text class="col" x="102" y="134">code</text>
+<text class="type" x="332" y="134" text-anchor="end">VARCHAR(20)</text>
+<text class="badge-uk" x="58" y="154">UK</text>
+<text class="col" x="102" y="154">name</text>
+<text class="type" x="332" y="154" text-anchor="end">VARCHAR(80)</text>
+<line stroke="#1f3a5f" x1="50" y1="100" x2="340" y2="100"/>
+<rect class="box" x="420" y="70" width="290" height="96" rx="4"/>
+<path class="head-j" d="M420 100 V74 Q420 70 424 70 H706 Q710 70 710 74 V100 Z"/>
+<text class="title" x="565" y="90" text-anchor="middle">teacher_subjects  «junction»</text>
+<rect class="pkrow" x="421" y="100" width="288" height="20"/>
+<text class="badge-pk" x="428" y="114">PK,FK</text>
+<text class="col" x="472" y="114" font-weight="600">user_id</text>
+<text class="type" x="702" y="114" text-anchor="end">UUID</text>
+<rect class="pkrow" x="421" y="120" width="288" height="20"/>
+<text class="badge-pk" x="428" y="134">PK,FK</text>
+<text class="col" x="472" y="134" font-weight="600">subject_id</text>
+<text class="type" x="702" y="134" text-anchor="end">INT</text>
+<text class="badge-ck" x="428" y="154"></text>
+<text class="col" x="472" y="154">assigned_at</text>
+<text class="type" x="702" y="154" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="420" y1="100" x2="710" y2="100"/>
+<rect class="box" x="790" y="70" width="290" height="216" rx="4"/>
+<path class="head" d="M790 100 V74 Q790 70 794 70 H1076 Q1080 70 1080 74 V100 Z"/>
+<text class="title" x="935" y="90" text-anchor="middle">users</text>
+<rect class="pkrow" x="791" y="100" width="288" height="20"/>
+<text class="badge-pk" x="798" y="114">PK</text>
+<text class="col" x="842" y="114" font-weight="600">id</text>
+<text class="type" x="1072" y="114" text-anchor="end">UUID</text>
+<text class="badge-uk" x="798" y="134">UK</text>
+<text class="col" x="842" y="134">email</text>
+<text class="type" x="1072" y="134" text-anchor="end">VARCHAR(255)</text>
+<text class="badge-ck" x="798" y="154"></text>
+<text class="col" x="842" y="154">password_hash</text>
+<text class="type" x="1072" y="154" text-anchor="end">VARCHAR(255)</text>
+<text class="badge-ck" x="798" y="174"></text>
+<text class="col" x="842" y="174">first_name</text>
+<text class="type" x="1072" y="174" text-anchor="end">VARCHAR(80)</text>
+<text class="badge-ck" x="798" y="194"></text>
+<text class="col" x="842" y="194">last_name</text>
+<text class="type" x="1072" y="194" text-anchor="end">VARCHAR(80)</text>
+<text class="badge-ck" x="798" y="214">CK</text>
+<text class="col" x="842" y="214">role</text>
+<text class="type" x="1072" y="214" text-anchor="end">VARCHAR(20)</text>
+<text class="badge-ck" x="798" y="234"></text>
+<text class="col" x="842" y="234">is_active</text>
+<text class="type" x="1072" y="234" text-anchor="end">BOOLEAN</text>
+<text class="badge-ck" x="798" y="254"></text>
+<text class="col" x="842" y="254">created_at</text>
+<text class="type" x="1072" y="254" text-anchor="end">TIMESTAMPTZ</text>
+<text class="badge-ck" x="798" y="274"></text>
+<text class="col" x="842" y="274">updated_at</text>
+<text class="type" x="1072" y="274" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="790" y1="100" x2="1080" y2="100"/>
+<rect class="box" x="1160" y="70" width="290" height="176" rx="4"/>
+<path class="head" d="M1160 100 V74 Q1160 70 1164 70 H1446 Q1450 70 1450 74 V100 Z"/>
+<text class="title" x="1305" y="90" text-anchor="middle">class_groups</text>
+<rect class="pkrow" x="1161" y="100" width="288" height="20"/>
+<text class="badge-pk" x="1168" y="114">PK</text>
+<text class="col" x="1212" y="114" font-weight="600">id</text>
+<text class="type" x="1442" y="114" text-anchor="end">UUID</text>
+<text class="badge-fk" x="1168" y="134">FK</text>
+<text class="col" x="1212" y="134">teacher_id</text>
+<text class="type" x="1442" y="134" text-anchor="end">UUID</text>
+<text class="badge-ck" x="1168" y="154"></text>
+<text class="col" x="1212" y="154">name</text>
+<text class="type" x="1442" y="154" text-anchor="end">VARCHAR(10)</text>
+<text class="badge-ck" x="1168" y="174">CK</text>
+<text class="col" x="1212" y="174">grade_level</text>
+<text class="type" x="1442" y="174" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="1168" y="194">CK</text>
+<text class="col" x="1212" y="194">academic_year</text>
+<text class="type" x="1442" y="194" text-anchor="end">VARCHAR(9)</text>
+<text class="badge-ck" x="1168" y="214">CK</text>
+<text class="col" x="1212" y="214">student_count</text>
+<text class="type" x="1442" y="214" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="1168" y="234"></text>
+<text class="col" x="1212" y="234">created_at</text>
+<text class="type" x="1442" y="234" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="1160" y1="100" x2="1450" y2="100"/>
+<rect class="box" x="50" y="380" width="290" height="136" rx="4"/>
+<path class="head" d="M50 410 V384 Q50 380 54 380 H336 Q340 380 340 384 V410 Z"/>
+<text class="title" x="195" y="400" text-anchor="middle">learning_objectives</text>
+<rect class="pkrow" x="51" y="410" width="288" height="20"/>
+<text class="badge-pk" x="58" y="424">PK</text>
+<text class="col" x="102" y="424" font-weight="600">id</text>
+<text class="type" x="332" y="424" text-anchor="end">UUID</text>
+<text class="badge-fk" x="58" y="444">FK</text>
+<text class="col" x="102" y="444">subject_id</text>
+<text class="type" x="332" y="444" text-anchor="end">INT</text>
+<text class="badge-ck" x="58" y="464"></text>
+<text class="col" x="102" y="464">code</text>
+<text class="type" x="332" y="464" text-anchor="end">VARCHAR(20)</text>
+<text class="badge-ck" x="58" y="484">CK</text>
+<text class="col" x="102" y="484">grade_level</text>
+<text class="type" x="332" y="484" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="58" y="504"></text>
+<text class="col" x="102" y="504">description</text>
+<text class="type" x="332" y="504" text-anchor="end">TEXT</text>
+<line stroke="#1f3a5f" x1="50" y1="410" x2="340" y2="410"/>
+<rect class="box" x="420" y="380" width="290" height="76" rx="4"/>
+<path class="head-j" d="M420 410 V384 Q420 380 424 380 H706 Q710 380 710 384 V410 Z"/>
+<text class="title" x="565" y="400" text-anchor="middle">lesson_plan_objectives  «junction»</text>
+<rect class="pkrow" x="421" y="410" width="288" height="20"/>
+<text class="badge-pk" x="428" y="424">PK,FK</text>
+<text class="col" x="472" y="424" font-weight="600">lesson_plan_id</text>
+<text class="type" x="702" y="424" text-anchor="end">UUID</text>
+<rect class="pkrow" x="421" y="430" width="288" height="20"/>
+<text class="badge-pk" x="428" y="444">PK,FK</text>
+<text class="col" x="472" y="444" font-weight="600">objective_id</text>
+<text class="type" x="702" y="444" text-anchor="end">UUID</text>
+<line stroke="#1f3a5f" x1="420" y1="410" x2="710" y2="410"/>
+<rect class="box" x="790" y="380" width="290" height="216" rx="4"/>
+<path class="head" d="M790 410 V384 Q790 380 794 380 H1076 Q1080 380 1080 384 V410 Z"/>
+<text class="title" x="935" y="400" text-anchor="middle">lesson_plans</text>
+<rect class="pkrow" x="791" y="410" width="288" height="20"/>
+<text class="badge-pk" x="798" y="424">PK</text>
+<text class="col" x="842" y="424" font-weight="600">id</text>
+<text class="type" x="1072" y="424" text-anchor="end">UUID</text>
+<text class="badge-fk" x="798" y="444">FK</text>
+<text class="col" x="842" y="444">author_id</text>
+<text class="type" x="1072" y="444" text-anchor="end">UUID</text>
+<text class="badge-fk" x="798" y="464">FK</text>
+<text class="col" x="842" y="464">subject_id</text>
+<text class="type" x="1072" y="464" text-anchor="end">INT</text>
+<text class="badge-ck" x="798" y="484">CK</text>
+<text class="col" x="842" y="484">topic</text>
+<text class="type" x="1072" y="484" text-anchor="end">VARCHAR(80)</text>
+<text class="badge-ck" x="798" y="504">CK</text>
+<text class="col" x="842" y="504">grade_level</text>
+<text class="type" x="1072" y="504" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="798" y="524">CK</text>
+<text class="col" x="842" y="524">duration_minutes</text>
+<text class="type" x="1072" y="524" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="798" y="544">CK</text>
+<text class="col" x="842" y="544">status</text>
+<text class="type" x="1072" y="544" text-anchor="end">VARCHAR(12)</text>
+<text class="badge-ck" x="798" y="564"></text>
+<text class="col" x="842" y="564">created_at</text>
+<text class="type" x="1072" y="564" text-anchor="end">TIMESTAMPTZ</text>
+<text class="badge-ck" x="798" y="584"></text>
+<text class="col" x="842" y="584">updated_at</text>
+<text class="type" x="1072" y="584" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="790" y1="410" x2="1080" y2="410"/>
+<rect class="box" x="1160" y="380" width="290" height="156" rx="4"/>
+<path class="head-j" d="M1160 410 V384 Q1160 380 1164 380 H1446 Q1450 380 1450 384 V410 Z"/>
+<text class="title" x="1305" y="400" text-anchor="middle">class_lessons  «junction»</text>
+<rect class="pkrow" x="1161" y="410" width="288" height="20"/>
+<text class="badge-pk" x="1168" y="424">PK</text>
+<text class="col" x="1212" y="424" font-weight="600">id</text>
+<text class="type" x="1442" y="424" text-anchor="end">UUID</text>
+<text class="badge-fk" x="1168" y="444">FK</text>
+<text class="col" x="1212" y="444">lesson_plan_id</text>
+<text class="type" x="1442" y="444" text-anchor="end">UUID</text>
+<text class="badge-fk" x="1168" y="464">FK</text>
+<text class="col" x="1212" y="464">class_group_id</text>
+<text class="type" x="1442" y="464" text-anchor="end">UUID</text>
+<text class="badge-ck" x="1168" y="484"></text>
+<text class="col" x="1212" y="484">scheduled_on</text>
+<text class="type" x="1442" y="484" text-anchor="end">DATE</text>
+<text class="badge-ck" x="1168" y="504"></text>
+<text class="col" x="1212" y="504">notes</text>
+<text class="type" x="1442" y="504" text-anchor="end">TEXT NULL</text>
+<text class="badge-ck" x="1168" y="524"></text>
+<text class="col" x="1212" y="524">created_at</text>
+<text class="type" x="1442" y="524" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="1160" y1="410" x2="1450" y2="410"/>
+<rect class="box" x="420" y="690" width="290" height="176" rx="4"/>
+<path class="head" d="M420 720 V694 Q420 690 424 690 H706 Q710 690 710 694 V720 Z"/>
+<text class="title" x="565" y="710" text-anchor="middle">quizzes</text>
+<rect class="pkrow" x="421" y="720" width="288" height="20"/>
+<text class="badge-pk" x="428" y="734">PK</text>
+<text class="col" x="472" y="734" font-weight="600">id</text>
+<text class="type" x="702" y="734" text-anchor="end">UUID</text>
+<text class="badge-fk" x="428" y="754">FK</text>
+<text class="col" x="472" y="754">author_id</text>
+<text class="type" x="702" y="754" text-anchor="end">UUID</text>
+<text class="badge-fk" x="428" y="774">FK</text>
+<text class="col" x="472" y="774">lesson_plan_id</text>
+<text class="type" x="702" y="774" text-anchor="end">UUID NULL</text>
+<text class="badge-ck" x="428" y="794"></text>
+<text class="col" x="472" y="794">title</text>
+<text class="type" x="702" y="794" text-anchor="end">VARCHAR(120)</text>
+<text class="badge-ck" x="428" y="814">CK</text>
+<text class="col" x="472" y="814">time_limit_seconds</text>
+<text class="type" x="702" y="814" text-anchor="end">INT NULL</text>
+<text class="badge-ck" x="428" y="834"></text>
+<text class="col" x="472" y="834">created_at</text>
+<text class="type" x="702" y="834" text-anchor="end">TIMESTAMPTZ</text>
+<text class="badge-ck" x="428" y="854"></text>
+<text class="col" x="472" y="854">updated_at</text>
+<text class="type" x="702" y="854" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="420" y1="720" x2="710" y2="720"/>
+<rect class="box" x="790" y="690" width="290" height="156" rx="4"/>
+<path class="head" d="M790 720 V694 Q790 690 794 690 H1076 Q1080 690 1080 694 V720 Z"/>
+<text class="title" x="935" y="710" text-anchor="middle">lesson_plan_modules</text>
+<rect class="pkrow" x="791" y="720" width="288" height="20"/>
+<text class="badge-pk" x="798" y="734">PK</text>
+<text class="col" x="842" y="734" font-weight="600">id</text>
+<text class="type" x="1072" y="734" text-anchor="end">UUID</text>
+<text class="badge-fk" x="798" y="754">FK</text>
+<text class="col" x="842" y="754">lesson_plan_id</text>
+<text class="type" x="1072" y="754" text-anchor="end">UUID</text>
+<text class="badge-ck" x="798" y="774">CK</text>
+<text class="col" x="842" y="774">position</text>
+<text class="type" x="1072" y="774" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="798" y="794"></text>
+<text class="col" x="842" y="794">title</text>
+<text class="type" x="1072" y="794" text-anchor="end">VARCHAR(120)</text>
+<text class="badge-ck" x="798" y="814"></text>
+<text class="col" x="842" y="814">activity</text>
+<text class="type" x="1072" y="814" text-anchor="end">TEXT</text>
+<text class="badge-ck" x="798" y="834">CK</text>
+<text class="col" x="842" y="834">duration_minutes</text>
+<text class="type" x="1072" y="834" text-anchor="end">SMALLINT</text>
+<line stroke="#1f3a5f" x1="790" y1="720" x2="1080" y2="720"/>
+<rect class="box" x="1160" y="690" width="290" height="156" rx="4"/>
+<path class="head" d="M1160 720 V694 Q1160 690 1164 690 H1446 Q1450 690 1450 694 V720 Z"/>
+<text class="title" x="1305" y="710" text-anchor="middle">flashcard_decks</text>
+<rect class="pkrow" x="1161" y="720" width="288" height="20"/>
+<text class="badge-pk" x="1168" y="734">PK</text>
+<text class="col" x="1212" y="734" font-weight="600">id</text>
+<text class="type" x="1442" y="734" text-anchor="end">UUID</text>
+<text class="badge-fk" x="1168" y="754">FK</text>
+<text class="col" x="1212" y="754">author_id</text>
+<text class="type" x="1442" y="754" text-anchor="end">UUID</text>
+<text class="badge-fk" x="1168" y="774">FK</text>
+<text class="col" x="1212" y="774">lesson_plan_id</text>
+<text class="type" x="1442" y="774" text-anchor="end">UUID NULL</text>
+<text class="badge-ck" x="1168" y="794"></text>
+<text class="col" x="1212" y="794">title</text>
+<text class="type" x="1442" y="794" text-anchor="end">VARCHAR(120)</text>
+<text class="badge-ck" x="1168" y="814"></text>
+<text class="col" x="1212" y="814">created_at</text>
+<text class="type" x="1442" y="814" text-anchor="end">TIMESTAMPTZ</text>
+<text class="badge-ck" x="1168" y="834"></text>
+<text class="col" x="1212" y="834">updated_at</text>
+<text class="type" x="1442" y="834" text-anchor="end">TIMESTAMPTZ</text>
+<line stroke="#1f3a5f" x1="1160" y1="720" x2="1450" y2="720"/>
+<rect class="box" x="50" y="950" width="290" height="136" rx="4"/>
+<path class="head" d="M50 980 V954 Q50 950 54 950 H336 Q340 950 340 954 V980 Z"/>
+<text class="title" x="195" y="970" text-anchor="middle">question_options</text>
+<rect class="pkrow" x="51" y="980" width="288" height="20"/>
+<text class="badge-pk" x="58" y="994">PK</text>
+<text class="col" x="102" y="994" font-weight="600">id</text>
+<text class="type" x="332" y="994" text-anchor="end">UUID</text>
+<text class="badge-fk" x="58" y="1014">FK</text>
+<text class="col" x="102" y="1014">question_id</text>
+<text class="type" x="332" y="1014" text-anchor="end">UUID</text>
+<text class="badge-ck" x="58" y="1034">CK</text>
+<text class="col" x="102" y="1034">position</text>
+<text class="type" x="332" y="1034" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="58" y="1054"></text>
+<text class="col" x="102" y="1054">option_text</text>
+<text class="type" x="332" y="1054" text-anchor="end">VARCHAR(255)</text>
+<text class="badge-ck" x="58" y="1074"></text>
+<text class="col" x="102" y="1074">is_correct</text>
+<text class="type" x="332" y="1074" text-anchor="end">BOOLEAN</text>
+<line stroke="#1f3a5f" x1="50" y1="980" x2="340" y2="980"/>
+<rect class="box" x="420" y="950" width="290" height="156" rx="4"/>
+<path class="head" d="M420 980 V954 Q420 950 424 950 H706 Q710 950 710 954 V980 Z"/>
+<text class="title" x="565" y="970" text-anchor="middle">quiz_questions</text>
+<rect class="pkrow" x="421" y="980" width="288" height="20"/>
+<text class="badge-pk" x="428" y="994">PK</text>
+<text class="col" x="472" y="994" font-weight="600">id</text>
+<text class="type" x="702" y="994" text-anchor="end">UUID</text>
+<text class="badge-fk" x="428" y="1014">FK</text>
+<text class="col" x="472" y="1014">quiz_id</text>
+<text class="type" x="702" y="1014" text-anchor="end">UUID</text>
+<text class="badge-ck" x="428" y="1034">CK</text>
+<text class="col" x="472" y="1034">position</text>
+<text class="type" x="702" y="1034" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="428" y="1054"></text>
+<text class="col" x="472" y="1054">prompt</text>
+<text class="type" x="702" y="1054" text-anchor="end">TEXT</text>
+<text class="badge-ck" x="428" y="1074">CK</text>
+<text class="col" x="472" y="1074">question_type</text>
+<text class="type" x="702" y="1074" text-anchor="end">VARCHAR(20)</text>
+<text class="badge-ck" x="428" y="1094">CK</text>
+<text class="col" x="472" y="1094">points</text>
+<text class="type" x="702" y="1094" text-anchor="end">SMALLINT</text>
+<line stroke="#1f3a5f" x1="420" y1="980" x2="710" y2="980"/>
+<rect class="box" x="1160" y="950" width="290" height="136" rx="4"/>
+<path class="head" d="M1160 980 V954 Q1160 950 1164 950 H1446 Q1450 950 1450 954 V980 Z"/>
+<text class="title" x="1305" y="970" text-anchor="middle">flashcards</text>
+<rect class="pkrow" x="1161" y="980" width="288" height="20"/>
+<text class="badge-pk" x="1168" y="994">PK</text>
+<text class="col" x="1212" y="994" font-weight="600">id</text>
+<text class="type" x="1442" y="994" text-anchor="end">UUID</text>
+<text class="badge-fk" x="1168" y="1014">FK</text>
+<text class="col" x="1212" y="1014">deck_id</text>
+<text class="type" x="1442" y="1014" text-anchor="end">UUID</text>
+<text class="badge-ck" x="1168" y="1034">CK</text>
+<text class="col" x="1212" y="1034">position</text>
+<text class="type" x="1442" y="1034" text-anchor="end">SMALLINT</text>
+<text class="badge-ck" x="1168" y="1054">CK</text>
+<text class="col" x="1212" y="1054">front_text</text>
+<text class="type" x="1442" y="1054" text-anchor="end">VARCHAR(255)</text>
+<text class="badge-ck" x="1168" y="1074">CK</text>
+<text class="col" x="1212" y="1074">back_text</text>
+<text class="type" x="1442" y="1074" text-anchor="end">VARCHAR(500)</text>
+<line stroke="#1f3a5f" x1="1160" y1="980" x2="1450" y2="980"/>
+<rect class="legend" x="790" y="950" width="290" height="236" rx="4"/>
+<text class="lh" x="802" y="974">Teacher Assistant ERD · v0.2.0</text>
+<text class="lt" x="802" y="992">PostgreSQL 16 · Crow's Foot notation</text>
+<line class="rel" x1="804" y1="1016" x2="864" y2="1016"/>
+<line class="mark" x1="855" y1="1008" x2="855" y2="1024"/>
+<line class="mark" x1="849" y1="1008" x2="849" y2="1024"/>
+<text class="lt" x="878" y="1020">exactly one (mandatory FK)</text>
+<line class="rel" x1="804" y1="1040" x2="864" y2="1040"/>
+<line class="mark" x1="855" y1="1032" x2="855" y2="1048"/>
+<circle class="ring" cx="843" cy="1040" r="5"/>
+<text class="lt" x="878" y="1044">zero or one (nullable FK)</text>
+<line class="rel" x1="804" y1="1064" x2="864" y2="1064"/>
+<line class="mark" x1="848" y1="1064" x2="864" y2="1073"/>
+<line class="mark" x1="848" y1="1064" x2="864" y2="1064"/>
+<line class="mark" x1="848" y1="1064" x2="864" y2="1055"/>
+<circle class="ring" cx="841" cy="1064" r="5"/>
+<text class="lt" x="878" y="1068">zero or many</text>
+<line class="rel" x1="804" y1="1088" x2="864" y2="1088"/>
+<line class="mark" x1="848" y1="1088" x2="864" y2="1097"/>
+<line class="mark" x1="848" y1="1088" x2="864" y2="1088"/>
+<line class="mark" x1="848" y1="1088" x2="864" y2="1079"/>
+<line class="mark" x1="844" y1="1080" x2="844" y2="1096"/>
+<text class="lt" x="878" y="1092">one or many</text>
+<text class="badge-pk" x="802" y="1122">PK</text><text class="lt" x="832" y="1122">primary key</text>
+<text class="badge-fk" x="942" y="1122">FK</text><text class="lt" x="972" y="1122">foreign key</text>
+<text class="badge-uk" x="802" y="1142">UK</text><text class="lt" x="832" y="1142">unique</text>
+<text class="badge-ck" x="942" y="1142">CK</text><text class="lt" x="972" y="1142">CHECK constraint</text>
+<text class="lt" x="802" y="1172">All columns NOT NULL unless marked NULL.</text>
+</svg>

@@ -435,7 +435,7 @@ function LessonPlanner({ user, initialMessage, onUserUpdated }) {
     setIsLoading(true);
     setStatusMessage({ key: 'building' });
     try {
-      const { modules, user: updatedUser } = await apiRequest('/api/lesson-plans', { method: 'POST', body: lessonRequest });
+      const { modules, user: updatedUser } = await apiRequest('/api/lesson-plans/generate', { method: 'POST', body: lessonRequest });
       setPlans(modules);
       setLastRequest(lessonRequest);
       onUserUpdated(updatedUser);

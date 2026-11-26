@@ -2,7 +2,7 @@
 
 ## Project Context
 
-Teacher Assistant currently includes a React lesson-plan generator frontend built with Vite, plus teacher accounts served by a Node.js API (`server/`) with a SQLite database. The frontend entry point is `frontend/app.jsx`, the mount document is `frontend/index.html`, and presentation lives in `frontend/styles.css`. Validation rules shared by the frontend and server live in `shared/validation.js`. Supporting project documentation lives in `README.md`, `specifications.md`, and `development.md`.
+Teacher Assistant currently includes a React lesson-plan generator frontend built with Vite, plus teacher accounts served by a Node.js API (`server/`) with a SQLite database. The frontend entry point is `frontend/app.jsx`, the mount document is `frontend/index.html`, and presentation lives in `frontend/styles.css`. Validation rules and lesson-plan templates shared by the frontend and server live in `shared/`; interface text lives in `frontend/translations.js`. Supporting project documentation lives in `README.md`, `docs/specifications.md`, and `development.md`. UML diagrams (Mermaid) live in `docs/diagrams/behavioral/` and `docs/diagrams/structural/`. The target PostgreSQL data model lives in `prisma/schema.prisma` (migration and seed in `prisma/`). Its ERD and design report live in `docs/`. Keep `docs/database-schema.md` and the ERD in sync with any schema change. The running API still uses its own SQLite schema in `server/database.js`; it has not been moved to the Prisma model yet.
 
 ## Source of Truth
 
@@ -10,7 +10,7 @@ Before making a change, read:
 
 1. `my_project.cursorrules`
 2. The source file that owns the requested behavior
-3. `specifications.md` and `development.md` when requirements or workflow are affected
+3. `docs/specifications.md` and `development.md` when requirements or workflow are affected
 
 Treat explicit user requests as the task scope. Do not overwrite unrelated user changes.
 
@@ -31,7 +31,8 @@ Treat explicit user requests as the task scope. Do not overwrite unrelated user 
 
 ## Documentation Rules
 
-- Update `specifications.md` when a requirement, state shape, validation rule, or acceptance criterion changes.
+- Update `docs/specifications.md` when a requirement, state shape, validation rule, or acceptance criterion changes.
+- Keep `docs/diagrams/` in sync with schema and requirement changes. Class-diagram attributes and cardinalities must match `prisma/schema.prisma`. LessonPlan states must match `lesson_plans_status_chk`. Use cases and the traceability matrix must cover every FR. REST endpoints must be identical in the SRS, activity and sequence diagrams. Keep each element's "Implemented" / "Planned" status accurate.
 - Update `development.md` when setup, verification, architecture, or known limitations change.
 - Update `README.md` when the project purpose, scope, quick start, or file map changes.
 - Keep all documentation consistent with the actual implementation; do not document planned behavior as complete.

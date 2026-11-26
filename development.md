@@ -40,7 +40,7 @@ Supported languages (`kk`, `ru`, `en`), subject names in each language, and the 
 
 ### `server/index.js`
 
-The API server: `POST /api/register`, `POST /api/login`, `POST /api/logout`, `GET /api/me`, `PUT /api/me/subject`, and `POST /api/lesson-plans` (builds the plan in the requested language and saves the subject). It hashes passwords with scrypt, keeps sessions in an HttpOnly cookie, and returns `{ error, fieldErrors }` with error codes on failures.
+The API server: `POST /api/register`, `POST /api/login`, `POST /api/logout`, `GET /api/me`, `PUT /api/me/subject`, and `POST /api/lesson-plans/generate` (builds the plan in the requested language and saves the subject). It hashes passwords with scrypt, keeps sessions in an HttpOnly cookie, and returns `{ error, fieldErrors }` with error codes on failures.
 
 ### `server/database.js`
 
@@ -62,6 +62,24 @@ Mounts the React application. `App` owns the language (shared through `LanguageC
 
 All interface text in Kazakh, Russian, and English, including field-error text for each error code. Every language must have the same keys.
 
+### `prisma/schema.prisma` and `prisma/migrations/`
+
+The executable PostgreSQL 16 schema. The init migration was generated with `prisma migrate diff --from-empty`, and the CHECK constraints were appended by hand because Prisma cannot express them. If you change the schema, create a new migration and add any new CHECK constraints to it manually. Keep `docs/database-schema.md` and the ERD in sync.
+
+### `prisma/seed.sql`
+
+Fictional sample data for every table. The ten teachers, classes and dates are carried over from the v0.1 SQLite seed. Run it with `npm run db:seed` after `npm run db:migrate`. It is safe to run more than once (`ON CONFLICT DO NOTHING`).
+
+### `docs/`
+
+`database-schema.md` is the Deliverable 2 report. `erd.svg` is the diagram source, and `erd.png` and `erd.pdf` are exports of it.
+
+`specifications.md` is the software requirements specification (Deliverable 3). `diagrams/behavioral/` and `diagrams/structural/` hold the UML diagrams as Mermaid code blocks inside Markdown, which GitHub renders directly. To check that every diagram parses locally, run the Mermaid CLI on a file. It needs a Chromium-based browser and is not a project dependency:
+
+```sh
+npx -y @mermaid-js/mermaid-cli -i docs/diagrams/structural/sequence.md -o out/sequence.md
+```
+
 ## 4. Verification Commands
 
 Build the frontend after changes:
@@ -75,6 +93,19 @@ Start both servers for interactive browser checks:
 ```sh
 npm run dev:api
 npm run dev
+```
+
+Validate the database schema (no database connection needed):
+
+```sh
+npm run db:validate
+```
+
+Apply the schema and sample data to a PostgreSQL 16 database configured in `.env` (see README, "Database setup"):
+
+```sh
+npm run db:migrate
+npm run db:seed
 ```
 
 ## 5. Manual Test Pass
@@ -116,6 +147,7 @@ After editing:
 - The API server is for local development; production hosting (HTTPS, `Secure` cookies, serving the built frontend) is not set up.
 - Lesson plans come from fixed templates, not from an AI model; only the topic, subject, and grade change between plans.
 - Errors for malformed API requests (`invalidJson`, `notFound`, and similar) fall back to a generic translated message.
+- The PostgreSQL schema in `prisma/` is designed and verified, but the app does not read from it or write to it yet; the API uses its own SQLite schema in `server/database.js`.
 - There are no automated browser tests in the current project. The Vite production build is the automated frontend verification.
 
 ## 8. Extension Guidance

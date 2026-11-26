@@ -145,7 +145,7 @@ export function createApiServer(database) {
     },
 
     // Builds the plan in the requested language and remembers the subject on the account.
-    'POST /api/lesson-plans': async (request, response) => {
+    'POST /api/lesson-plans/generate': async (request, response) => {
       const userRow = requireUser(request);
       const { values, fieldErrors } = validateLessonRequest(await readJsonBody(request));
       if (Object.keys(fieldErrors).length > 0) throw new RequestError(400, 'checkFields', fieldErrors);

@@ -1,0 +1,249 @@
+// Teacher Assistant - relational schema (Deliverable 2, v0.2.0)
+// Target: PostgreSQL 16. Every model maps to a snake_case table.
+// CHECK constraints are not expressible in Prisma; they live in
+// prisma/migrations/20261106000000_init/migration.sql and are documented
+// in docs/database-schema.md.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identity and reference data
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  firstName    String   @map("first_name") @db.VarChar(80)
+  lastName     String   @map("last_name") @db.VarChar(80)
+  role         String   @default("TEACHER") @db.VarChar(20)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  teacherSubjects TeacherSubject[]
+  classGroups     ClassGroup[]
+  lessonPlans     LessonPlan[]
+  quizzes         Quiz[]
+  flashcardDecks  FlashcardDeck[]
+
+  @@map("users")
+}
+
+model Subject {
+  id   Int    @id @default(autoincrement())
+  code String @unique @db.VarChar(20)
+  name String @unique @db.VarChar(80)
+
+  teacherSubjects    TeacherSubject[]
+  learningObjectives LearningObjective[]
+  lessonPlans        LessonPlan[]
+
+  @@map("subjects")
+}
+
+/// Junction: resolves the N:M "teacher teaches subject" relationship.
+model TeacherSubject {
+  userId     String   @map("user_id") @db.Uuid
+  subjectId  Int      @map("subject_id")
+  assignedAt DateTime @default(now()) @map("assigned_at") @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([userId, subjectId])
+  @@index([subjectId], type: BTree)
+  @@map("teacher_subjects")
+}
+
+model ClassGroup {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teacherId    String   @map("teacher_id") @db.Uuid
+  name         String   @db.VarChar(10)
+  gradeLevel   Int      @map("grade_level") @db.SmallInt
+  academicYear String   @map("academic_year") @db.VarChar(9)
+  studentCount Int      @default(0) @map("student_count") @db.SmallInt
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  teacher      User          @relation(fields: [teacherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  classLessons ClassLesson[]
+
+  // Leading teacher_id column also serves as the B-Tree index for the FK.
+  @@unique([teacherId, name, academicYear])
+  @@map("class_groups")
+}
+
+model LearningObjective {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subjectId   Int    @map("subject_id")
+  code        String @db.VarChar(20)
+  gradeLevel  Int    @map("grade_level") @db.SmallInt
+  description String @db.Text
+
+  subject              Subject               @relation(fields: [subjectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lessonPlanObjectives LessonPlanObjective[]
+
+  // Curriculum codes such as 5.1.2.1 repeat across subjects.
+  @@unique([subjectId, code])
+  @@index([subjectId, gradeLevel], type: BTree)
+  @@map("learning_objectives")
+}
+
+// ---------------------------------------------------------------------------
+// Lesson planning (short-term lesson plan / QMZh)
+// ---------------------------------------------------------------------------
+
+model LessonPlan {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId        String   @map("author_id") @db.Uuid
+  subjectId       Int      @map("subject_id")
+  topic           String   @db.VarChar(80)
+  gradeLevel      Int      @map("grade_level") @db.SmallInt
+  durationMinutes Int      @default(45) @map("duration_minutes") @db.SmallInt
+  status          String   @default("DRAFT") @db.VarChar(12)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  author         User                  @relation(fields: [authorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  subject        Subject               @relation(fields: [subjectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  objectives     LessonPlanObjective[]
+  modules        LessonPlanModule[]
+  classLessons   ClassLesson[]
+  quizzes        Quiz[]
+  flashcardDecks FlashcardDeck[]
+
+  @@index([authorId, createdAt(sort: Desc)], type: BTree)
+  @@index([subjectId, gradeLevel], type: BTree)
+  @@map("lesson_plans")
+}
+
+/// Junction: resolves the N:M "lesson plan targets curriculum objective" relationship.
+model LessonPlanObjective {
+  lessonPlanId String @map("lesson_plan_id") @db.Uuid
+  objectiveId  String @map("objective_id") @db.Uuid
+
+  lessonPlan LessonPlan        @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  objective  LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([lessonPlanId, objectiveId])
+  @@index([objectiveId], type: BTree)
+  @@map("lesson_plan_objectives")
+}
+
+model LessonPlanModule {
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonPlanId    String @map("lesson_plan_id") @db.Uuid
+  position        Int    @db.SmallInt
+  title           String @db.VarChar(120)
+  activity        String @db.Text
+  durationMinutes Int    @map("duration_minutes") @db.SmallInt
+
+  lessonPlan LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([lessonPlanId, position])
+  @@map("lesson_plan_modules")
+}
+
+/// Junction with payload: resolves the N:M "lesson plan is taught to class group" relationship.
+model ClassLesson {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonPlanId String   @map("lesson_plan_id") @db.Uuid
+  classGroupId String   @map("class_group_id") @db.Uuid
+  scheduledOn  DateTime @map("scheduled_on") @db.Date
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  lessonPlan LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  classGroup ClassGroup @relation(fields: [classGroupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([classGroupId, scheduledOn, lessonPlanId])
+  @@index([lessonPlanId], type: BTree)
+  @@map("class_lessons")
+}
+
+// ---------------------------------------------------------------------------
+// Assessment and edu-games
+// ---------------------------------------------------------------------------
+
+model Quiz {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId         String   @map("author_id") @db.Uuid
+  lessonPlanId     String?  @map("lesson_plan_id") @db.Uuid
+  title            String   @db.VarChar(120)
+  timeLimitSeconds Int?     @map("time_limit_seconds")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  author     User           @relation(fields: [authorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lessonPlan LessonPlan?    @relation(fields: [lessonPlanId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  questions  QuizQuestion[]
+
+  @@index([authorId, createdAt(sort: Desc)], type: BTree)
+  @@index([lessonPlanId], type: BTree)
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quizId       String @map("quiz_id") @db.Uuid
+  position     Int    @db.SmallInt
+  prompt       String @db.Text
+  questionType String @default("SINGLE_CHOICE") @map("question_type") @db.VarChar(20)
+  points       Int    @default(1) @db.SmallInt
+
+  quiz    Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  options QuestionOption[]
+
+  @@unique([quizId, position])
+  @@map("quiz_questions")
+}
+
+model QuestionOption {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  questionId String  @map("question_id") @db.Uuid
+  position   Int     @db.SmallInt
+  optionText String  @map("option_text") @db.VarChar(255)
+  isCorrect  Boolean @default(false) @map("is_correct")
+
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([questionId, position])
+  @@map("question_options")
+}
+
+model FlashcardDeck {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId     String   @map("author_id") @db.Uuid
+  lessonPlanId String?  @map("lesson_plan_id") @db.Uuid
+  title        String   @db.VarChar(120)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  author     User        @relation(fields: [authorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lessonPlan LessonPlan? @relation(fields: [lessonPlanId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  flashcards Flashcard[]
+
+  @@index([authorId, createdAt(sort: Desc)], type: BTree)
+  @@index([lessonPlanId], type: BTree)
+  @@map("flashcard_decks")
+}
+
+model Flashcard {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  deckId    String @map("deck_id") @db.Uuid
+  position  Int    @db.SmallInt
+  frontText String @map("front_text") @db.VarChar(255)
+  backText  String @map("back_text") @db.VarChar(500)
+
+  deck FlashcardDeck @relation(fields: [deckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([deckId, position])
+  @@map("flashcards")
+}
