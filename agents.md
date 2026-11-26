@@ -2,7 +2,7 @@
 
 ## Project Context
 
-Teacher Assistant currently includes a React lesson-plan generator frontend built with Vite. The frontend entry point is `frontend/app.jsx`, the mount document is `frontend/index.html`, and presentation lives in `frontend/styles.css`. Supporting project documentation lives in `README.md`, `specifications.md`, and `development.md`.
+Teacher Assistant currently includes a React lesson-plan generator frontend built with Vite, plus teacher accounts served by a Node.js API (`server/`) with a SQLite database. The frontend entry point is `frontend/app.jsx`, the mount document is `frontend/index.html`, and presentation lives in `frontend/styles.css`. Validation rules shared by the frontend and server live in `shared/validation.js`. Supporting project documentation lives in `README.md`, `specifications.md`, and `development.md`.
 
 ## Source of Truth
 
